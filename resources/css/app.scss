@@ -1,0 +1,780 @@
+// ===========================================================================
+//  AcadVault — Design System
+//  Palette taken from the AcadVault logo:
+//  deep navy · academic gold · cream · soft neutral gray canvas · white cards
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// 1. Brand palette (declared before Bootstrap so its maps pick them up)
+// ---------------------------------------------------------------------------
+$av-navy-900: #14243c;
+$av-navy-800: #1a2e4a;
+$av-navy-700: #22375a; // logo navy — primary
+$av-navy-600: #2d4770;
+$av-navy-100: #e8edf5;
+
+$av-gold-700: #a87c26; // darkened gold — 4.6:1 on white, safe for text/links
+$av-gold-600: #c8963a; // logo gold — accent surfaces
+$av-gold-500: #d8ab52;
+$av-gold-100: #faf1dd;
+
+$av-cream: #f7f3e8; // logo cream
+
+$av-accent-700: $av-gold-700;
+$av-accent-600: $av-gold-600;
+$av-accent-100: $av-gold-100;
+
+$primary: $av-navy-700;
+$secondary: #6b7280;
+$success: #157347;
+$danger: #b02a37;
+$warning: $av-gold-700;
+$info: $av-navy-600;
+$light: #f4f6f9;
+$dark: $av-navy-900;
+
+// ---------------------------------------------------------------------------
+// 2. Global Bootstrap overrides
+// ---------------------------------------------------------------------------
+$body-bg: #f4f6f9;
+$body-color: #1f2937;
+$body-secondary-color: #5b6675;
+
+$font-family-sans-serif:
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+$font-size-base: 0.95rem;
+$line-height-base: 1.6;
+$headings-font-weight: 600;
+$headings-color: $av-navy-900;
+
+$border-radius: 0.625rem;
+$border-radius-sm: 0.45rem;
+$border-radius-lg: 0.875rem;
+$border-color: #e3e8ef;
+
+$card-border-width: 1px;
+$card-border-color: #e8ecf3;
+$card-cap-bg: #fff;
+$card-spacer-y: 1.25rem;
+$card-spacer-x: 1.5rem;
+
+$table-cell-padding-y: 0.8rem;
+$table-cell-padding-x: 1rem;
+$table-striped-bg: #fafbfd;
+$table-hover-bg: $av-navy-100;
+
+$input-btn-focus-width: 0.2rem;
+$input-btn-padding-y: 0.55rem;
+$input-btn-padding-x: 0.95rem;
+$input-border-color: #d5dce6;
+$input-placeholder-color: #9aa5b4;
+$form-label-font-weight: 600;
+$form-label-color: #374151;
+
+$btn-font-weight: 600;
+$badge-font-weight: 600;
+$badge-padding-y: 0.4em;
+$badge-padding-x: 0.7em;
+
+$dropdown-border-color: #e8ecf3;
+$dropdown-link-active-bg: $av-navy-100;
+$dropdown-link-active-color: $av-navy-700;
+
+$pagination-color: $av-navy-700;
+$pagination-active-bg: $av-navy-700;
+$pagination-active-border-color: $av-navy-700;
+
+// ---------------------------------------------------------------------------
+// 3. Bootstrap + Bootstrap Icons
+// ---------------------------------------------------------------------------
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+// Point the icon @font-face at the real font files so Vite can fingerprint them.
+$bootstrap-icons-font-dir: "../../node_modules/bootstrap-icons/font/fonts";
+@import "../../node_modules/bootstrap-icons/font/bootstrap-icons";
+
+// ---------------------------------------------------------------------------
+// 4. Shared tokens
+// ---------------------------------------------------------------------------
+:root {
+    --av-navy-900: #{$av-navy-900};
+    --av-navy-800: #{$av-navy-800};
+    --av-navy-700: #{$av-navy-700};
+    --av-navy-600: #{$av-navy-600};
+    --av-navy-100: #{$av-navy-100};
+    --av-gold-700: #{$av-gold-700};
+    --av-gold-600: #{$av-gold-600};
+    --av-gold-500: #{$av-gold-500};
+    --av-gold-100: #{$av-gold-100};
+    --av-cream: #{$av-cream};
+
+    --av-accent-700: #{$av-accent-700};
+    --av-accent-600: #{$av-accent-600};
+    --av-accent-100: #{$av-accent-100};
+
+    --av-sidebar-width: 264px;
+    --av-topbar-height: 64px;
+
+    --av-shadow-sm: 0 1px 2px rgba(15, 30, 55, 0.06);
+    --av-shadow-card: 0 1px 3px rgba(15, 30, 55, 0.06),
+        0 8px 24px rgba(15, 30, 55, 0.05);
+    --av-shadow-lift: 0 4px 12px rgba(15, 30, 55, 0.1),
+        0 16px 40px rgba(15, 30, 55, 0.08);
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+// ---------------------------------------------------------------------------
+// 5. Accent button / utility
+// ---------------------------------------------------------------------------
+// Gold accent button — navy label on gold keeps contrast well above 4.5:1
+.btn-accent {
+    --bs-btn-color: #{$av-navy-900};
+    --bs-btn-bg: #{$av-gold-600};
+    --bs-btn-border-color: #{$av-gold-600};
+    --bs-btn-hover-color: #{$av-navy-900};
+    --bs-btn-hover-bg: #{$av-gold-500};
+    --bs-btn-hover-border-color: #{$av-gold-500};
+    --bs-btn-focus-shadow-rgb: 200, 150, 58;
+    --bs-btn-active-color: #{$av-navy-900};
+    --bs-btn-active-bg: #{$av-gold-700};
+    --bs-btn-active-border-color: #{$av-gold-700};
+    --bs-btn-disabled-color: #{$av-navy-900};
+    --bs-btn-disabled-bg: #{$av-gold-500};
+    --bs-btn-disabled-border-color: #{$av-gold-500};
+}
+
+.btn-outline-accent {
+    --bs-btn-color: #{$av-gold-700};
+    --bs-btn-border-color: #{$av-gold-600};
+    --bs-btn-hover-color: #{$av-navy-900};
+    --bs-btn-hover-bg: #{$av-gold-600};
+    --bs-btn-hover-border-color: #{$av-gold-600};
+    --bs-btn-focus-shadow-rgb: 200, 150, 58;
+    --bs-btn-active-color: #{$av-navy-900};
+    --bs-btn-active-bg: #{$av-gold-600};
+    --bs-btn-active-border-color: #{$av-gold-600};
+}
+
+.text-accent {
+    color: $av-gold-700 !important;
+}
+
+.bg-cream {
+    background-color: $av-cream !important;
+}
+
+.bg-navy {
+    background-color: $av-navy-700 !important;
+}
+
+// Bootstrap only flattens a leading addon's inner corners when `.has-validation`
+// actually has a feedback element beside it. Ours renders only on error, so
+// without this the icon box keeps all four corners and floats away from the
+// field. Affects every input-group in the app, search boxes included.
+.input-group > .input-group-text:first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+// ---------------------------------------------------------------------------
+// 6. Cards
+// ---------------------------------------------------------------------------
+.card {
+    box-shadow: var(--av-shadow-card);
+}
+
+.card-header {
+    border-bottom: 1px solid #eef1f6;
+    padding: 1.1rem 1.5rem;
+    font-weight: 600;
+}
+
+// Stat cards on the dashboards
+.stat-card {
+    position: relative;
+    overflow: hidden;
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 1.4rem;
+        flex: 0 0 auto;
+    }
+
+    .stat-value {
+        font-size: 1.9rem;
+        font-weight: 700;
+        line-height: 1.1;
+        color: var(--av-navy-900);
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: #6b7280;
+    }
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--av-shadow-lift);
+    }
+}
+
+.stat-icon-navy {
+    background: var(--av-navy-100);
+    color: var(--av-navy-700);
+}
+.stat-icon-accent {
+    background: var(--av-accent-100);
+    color: var(--av-accent-700);
+}
+.stat-icon-success {
+    background: #dcf3e6;
+    color: #14653b;
+}
+.stat-icon-warning {
+    background: #fdf1d9;
+    color: #96690a;
+}
+.stat-icon-danger {
+    background: #fbe3e5;
+    color: #9b232f;
+}
+
+// ---------------------------------------------------------------------------
+// 7. App shell — fixed sidebar + top bar
+// ---------------------------------------------------------------------------
+.av-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--av-sidebar-width);
+    background: linear-gradient(
+        180deg,
+        var(--av-navy-700) 0%,
+        var(--av-navy-900) 100%
+    );
+    color: rgba(255, 255, 255, 0.82);
+    display: flex;
+    flex-direction: column;
+    z-index: 1045;
+    transition: transform 0.25s ease;
+}
+
+.av-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 1.15rem 1.35rem;
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    // Cream tile — the logo artwork is navy and would vanish on the navy rail.
+    .av-brand-mark {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: var(--av-cream);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        padding: 3px;
+    }
+
+    .av-brand-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        line-height: 1.15;
+    }
+
+    .av-brand-sub {
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.55);
+    }
+}
+
+.av-nav {
+    padding: 1rem 0.85rem;
+    overflow-y: auto;
+    flex: 1 1 auto;
+
+    .av-nav-section {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.4);
+        padding: 0.9rem 0.75rem 0.4rem;
+    }
+
+    .av-nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.62rem 0.75rem;
+        margin-bottom: 0.15rem;
+        border-radius: 8px;
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition:
+            background 0.15s ease,
+            color 0.15s ease;
+
+        i {
+            font-size: 1.05rem;
+            width: 1.25rem;
+            text-align: center;
+            flex: 0 0 auto;
+        }
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.09);
+            color: #fff;
+        }
+
+        &.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-weight: 600;
+            box-shadow: inset 3px 0 0 var(--av-accent-600);
+        }
+    }
+}
+
+.av-sidebar-footer {
+    padding: 0.9rem 1.35rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.av-topbar {
+    position: sticky;
+    top: 0;
+    height: var(--av-topbar-height);
+    background: #fff;
+    border-bottom: 1px solid #e6eaf1;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1.5rem;
+    z-index: 1030;
+}
+
+.av-content {
+    margin-left: var(--av-sidebar-width);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.av-page {
+    padding: 1.75rem 1.5rem 2.5rem;
+    flex: 1 1 auto;
+}
+
+.av-page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.15rem;
+}
+
+.av-page-subtitle {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+// User chip in the top bar
+.av-user-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    background: transparent;
+    border: 0;
+    padding: 0.3rem 0.4rem;
+    border-radius: 8px;
+
+    &:hover {
+        background: #f2f5f9;
+    }
+
+    .av-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--av-navy-700);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+        flex: 0 0 auto;
+    }
+
+    .av-user-name {
+        font-weight: 600;
+        font-size: 0.88rem;
+        line-height: 1.2;
+        color: var(--av-navy-900);
+    }
+
+    .av-user-role {
+        font-size: 0.72rem;
+        color: #6b7280;
+        text-transform: capitalize;
+        line-height: 1.2;
+    }
+}
+
+// Mobile: sidebar slides in over the content
+.av-sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 28, 51, 0.5);
+    z-index: 1040;
+}
+
+@media (max-width: 991.98px) {
+    .av-sidebar {
+        transform: translateX(-100%);
+        box-shadow: var(--av-shadow-lift);
+    }
+    body.av-sidebar-open .av-sidebar {
+        transform: translateX(0);
+    }
+    body.av-sidebar-open .av-sidebar-backdrop {
+        display: block;
+    }
+    .av-content {
+        margin-left: 0;
+    }
+    .av-page {
+        padding: 1.25rem 1rem 2rem;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// 8. Tables
+// ---------------------------------------------------------------------------
+.av-table {
+    margin-bottom: 0;
+
+    > thead th {
+        background: #f7f9fc;
+        color: #4b5563;
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border-bottom: 1px solid #e6eaf1;
+        white-space: nowrap;
+    }
+
+    > tbody td {
+        vertical-align: middle;
+        border-color: #eef1f6;
+    }
+}
+
+.av-empty {
+    padding: 3rem 1rem;
+    text-align: center;
+    color: #6b7280;
+
+    i {
+        font-size: 2.5rem;
+        color: #c3ccd9;
+        display: block;
+        margin-bottom: 0.75rem;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// 9. Status badges — colour is always paired with a text label + icon
+// ---------------------------------------------------------------------------
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    padding: 0.4em 0.7em;
+    border-radius: 999px;
+    border: 1px solid transparent;
+}
+
+.badge-authentic {
+    background: #dcf3e6;
+    color: #14653b;
+    border-color: #b6e2c8;
+}
+.badge-tampered {
+    background: #fbe3e5;
+    color: #8f1f2a;
+    border-color: #f2c2c7;
+}
+.badge-pending {
+    background: #eef1f6;
+    color: #4b5563;
+    border-color: #dde3ec;
+}
+.badge-warning-soft {
+    background: #fdf1d9;
+    color: #7d5605;
+    border-color: #f2ddb0;
+}
+.badge-role {
+    background: var(--av-navy-100);
+    color: var(--av-navy-700);
+    border-color: #cfdcee;
+}
+
+// ---------------------------------------------------------------------------
+// 10. Auth — split layout login/register
+// ---------------------------------------------------------------------------
+// container-fluid brings 12px of gutter, which showed as white strips down
+// both edges of the page. The two panels are the page here — no gutter.
+.av-auth {
+    min-height: 100vh;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+// Left: cream. The navy logo artwork sits straight on it — this is the ground
+// it was drawn for, so it needs no plate and no CSS-rebuilt wordmark.
+.av-auth-brand {
+    background:
+        radial-gradient(
+            circle at 18% 10%,
+            rgba(200, 150, 58, 0.18) 0%,
+            transparent 55%
+        ),
+        var(--av-cream);
+    color: var(--av-navy-900);
+    padding: 3.5rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .av-auth-logo-full {
+        display: block;
+        width: 100%;
+        max-width: 21rem;
+        height: auto;
+        margin-bottom: 2.25rem;
+    }
+
+    .av-auth-tagline {
+        font-size: 1.02rem;
+        line-height: 1.65;
+        color: rgba(20, 36, 60, 0.72);
+        max-width: 30rem;
+        margin-bottom: 2.25rem;
+    }
+
+    .av-auth-feature {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.85rem;
+        margin-bottom: 1.05rem;
+        color: rgba(20, 36, 60, 0.86);
+        font-size: 0.92rem;
+
+        i {
+            color: var(--av-gold-700); // darkened gold — readable on cream
+            font-size: 1.15rem;
+            line-height: 1.4;
+        }
+    }
+}
+
+// Shorter viewports: keep the lockup from crowding the feature list.
+@media (max-height: 800px) {
+    .av-auth-brand .av-auth-logo-full {
+        max-width: 16rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+// Right: navy. Everything inside the form is re-tinted for a dark ground —
+// the inputs stay white so the fields still read as the place you type.
+.av-auth-form-panel {
+    background:
+        radial-gradient(
+            circle at 78% 12%,
+            rgba(200, 150, 58, 0.16) 0%,
+            transparent 50%
+        ),
+        linear-gradient(160deg, var(--av-navy-700) 0%, var(--av-navy-900) 100%);
+    color: #fff;
+    padding: 3rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    h1,
+    h2,
+    h3,
+    .h3 {
+        color: #fff;
+    }
+
+    // Scoped away from .input-group-text: those addons keep a white
+    // background, so a white icon inside one would vanish.
+    .text-body-secondary:not(.input-group-text) {
+        color: rgba(255, 255, 255, 0.72) !important;
+    }
+
+    .form-label,
+    .form-check-label {
+        color: rgba(255, 255, 255, 0.92);
+    }
+
+    .form-text {
+        color: rgba(255, 255, 255, 0.65);
+    }
+
+    // Gold-700 is tuned for white; on navy the lighter gold carries.
+    .text-accent {
+        color: var(--av-gold-500) !important;
+    }
+
+    // A navy button on a navy panel would disappear — go gold instead.
+    .btn-primary {
+        --bs-btn-color: var(--av-navy-900);
+        --bs-btn-bg: var(--av-gold-600);
+        --bs-btn-border-color: var(--av-gold-600);
+        --bs-btn-hover-color: var(--av-navy-900);
+        --bs-btn-hover-bg: var(--av-gold-500);
+        --bs-btn-hover-border-color: var(--av-gold-500);
+        --bs-btn-active-color: var(--av-navy-900);
+        --bs-btn-active-bg: var(--av-gold-700);
+        --bs-btn-active-border-color: var(--av-gold-700);
+        --bs-btn-focus-shadow-rgb: 200, 150, 58;
+    }
+
+    .btn-link {
+        color: rgba(255, 255, 255, 0.75) !important;
+    }
+
+    // Bootstrap's danger red is too dark to read on navy.
+    .invalid-feedback {
+        color: #ffb3bd;
+    }
+
+    // The default focus ring and checked box are both navy, which is
+    // invisible here — the keyboard user would lose the focused field.
+    .form-control:focus,
+    .form-check-input:focus {
+        border-color: var(--av-gold-500);
+        box-shadow: 0 0 0 0.2rem rgba(200, 150, 58, 0.4);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--av-gold-600);
+        border-color: var(--av-gold-600);
+    }
+
+    // Cream plate so the navy logo reads when this panel is the whole page.
+    .av-auth-logo-plate {
+        display: inline-block;
+        background: var(--av-cream);
+        border-radius: 18px;
+        padding: 1.1rem 1.35rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+    }
+
+    .av-auth-logo-full {
+        display: block;
+        width: 100%;
+        max-width: 12rem;
+        height: auto;
+    }
+}
+
+.av-auth-form {
+    width: 100%;
+    max-width: 25rem;
+}
+
+// ---------------------------------------------------------------------------
+// 11. Verification result page
+// ---------------------------------------------------------------------------
+.av-verify-hero {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    margin-bottom: 1.25rem;
+}
+
+.av-verify-authentic {
+    background: #dcf3e6;
+    color: #14653b;
+}
+.av-verify-tampered {
+    background: #fbe3e5;
+    color: #8f1f2a;
+}
+
+// ---------------------------------------------------------------------------
+// 12. Misc
+// ---------------------------------------------------------------------------
+.av-kv {
+    dt {
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #6b7280;
+        margin-bottom: 0.15rem;
+    }
+    dd {
+        margin-bottom: 1rem;
+        color: #1f2937;
+        font-weight: 500;
+    }
+}
+
+.av-hash {
+    font-family: "Consolas", "SFMono-Regular", "Menlo", monospace;
+    font-size: 0.78rem;
+    word-break: break-all;
+    color: #4b5563;
+}
+
+.toast-container {
+    z-index: 1090;
+}
