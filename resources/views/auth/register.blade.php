@@ -9,14 +9,38 @@
         @csrf
 
         <div class="mb-3">
-            <label for="name" class="form-label">Full name</label>
-            <input id="name" type="text" name="name" value="{{ old('name') }}"
-                   class="form-control @error('name') is-invalid @enderror"
-                   placeholder="Juan Dela Cruz"
-                   required autofocus autocomplete="name">
-            @error('name')
+            <label for="last_name" class="form-label">Last name</label>
+            <input id="last_name" type="text" name="last_name" value="{{ old('last_name') }}"
+                   class="form-control @error('last_name') is-invalid @enderror"
+                   placeholder="Dela Cruz"
+                   required autofocus autocomplete="family-name">
+            @error('last_name')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-8">
+                <label for="first_name" class="form-label">First name</label>
+                <input id="first_name" type="text" name="first_name" value="{{ old('first_name') }}"
+                       class="form-control @error('first_name') is-invalid @enderror"
+                       placeholder="Juan"
+                       required autocomplete="given-name">
+                @error('first_name')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-4">
+                <label for="middle_initial" class="form-label">M.I.</label>
+                <input id="middle_initial" type="text" name="middle_initial"
+                       value="{{ old('middle_initial') }}" maxlength="1"
+                       class="form-control text-uppercase @error('middle_initial') is-invalid @enderror"
+                       placeholder="P" autocomplete="additional-name">
+                @error('middle_initial')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
         </div>
 
         <div class="mb-3">
@@ -28,6 +52,19 @@
             @error('email')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
+        </div>
+
+        <div class="mb-3">
+            <label for="phone" class="form-label">
+                Mobile number <span class="text-body-secondary fw-normal">(optional)</span>
+            </label>
+            <input id="phone" type="tel" name="phone" value="{{ old('phone') }}"
+                   class="form-control @error('phone') is-invalid @enderror"
+                   placeholder="09XX XXX XXXX" autocomplete="tel">
+            @error('phone')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+            <div class="form-text">Used by the registrar to reach you about your records.</div>
         </div>
 
         <div class="mb-3">

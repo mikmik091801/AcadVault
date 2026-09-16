@@ -185,6 +185,41 @@ body {
     border-bottom-right-radius: 0;
 }
 
+// Show/hide password button, appended to every password field by app.js.
+// It carries no border of its own: the field's outline simply continues
+// around it, so the icon reads as sitting inside the input rather than as a
+// button bolted onto the end.
+.av-password-toggle {
+    --bs-btn-color: #9aa5b4;
+    --bs-btn-bg: #{$input-bg};
+    --bs-btn-border-color: #{$input-border-color};
+    --bs-btn-hover-color: #{$av-navy-700};
+    --bs-btn-hover-bg: #{$input-bg};
+    --bs-btn-hover-border-color: #{$input-border-color};
+    --bs-btn-active-color: #{$av-navy-700};
+    --bs-btn-active-bg: #{$input-bg};
+    --bs-btn-active-border-color: #{$input-border-color};
+    --bs-btn-focus-shadow-rgb: 34, 55, 90;
+
+    // No divider between the field and the icon.
+    margin-left: 0;
+    border-left: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    padding-left: 0.6rem;
+    padding-right: 0.8rem;
+    z-index: 3; // keep the focus ring above the field's own border
+}
+
+// The button carries the field's trailing edge instead. Paired with the class
+// rather than :last-child, because the validation feedback element only
+// exists once a field has actually failed.
+.form-control.av-has-toggle {
+    border-right: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
 // ---------------------------------------------------------------------------
 // 6. Cards
 // ---------------------------------------------------------------------------
@@ -559,171 +594,74 @@ body {
 }
 
 // ---------------------------------------------------------------------------
-// 10. Auth — split layout login/register
+// 10. Auth — centred login/register
 // ---------------------------------------------------------------------------
-// container-fluid brings 12px of gutter, which showed as white strips down
-// both edges of the page. The two panels are the page here — no gutter.
+// Cream ground for the whole page. The logo PNG is transparent around the
+// artwork, so it sits straight on that ground with nothing boxing it in; the
+// form below gets its own white card to separate it from the page.
 .av-auth {
     min-height: 100vh;
-    padding-left: 0;
-    padding-right: 0;
-}
-
-// Left: cream. The navy logo artwork sits straight on it — this is the ground
-// it was drawn for, so it needs no plate and no CSS-rebuilt wordmark.
-.av-auth-brand {
-    background:
-        radial-gradient(
-            circle at 18% 10%,
-            rgba(200, 150, 58, 0.18) 0%,
-            transparent 55%
-        ),
-        var(--av-cream);
-    color: var(--av-navy-900);
-    padding: 3.5rem 3rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-
-    .av-auth-logo-full {
-        display: block;
-        width: 100%;
-        max-width: 21rem;
-        height: auto;
-        margin-bottom: 2.25rem;
-    }
-
-    .av-auth-tagline {
-        font-size: 1.02rem;
-        line-height: 1.65;
-        color: rgba(20, 36, 60, 0.72);
-        max-width: 30rem;
-        margin-bottom: 2.25rem;
-    }
-
-    .av-auth-feature {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.85rem;
-        margin-bottom: 1.05rem;
-        color: rgba(20, 36, 60, 0.86);
-        font-size: 0.92rem;
-
-        i {
-            color: var(--av-gold-700); // darkened gold — readable on cream
-            font-size: 1.15rem;
-            line-height: 1.4;
-        }
-    }
-}
-
-// Shorter viewports: keep the lockup from crowding the feature list.
-@media (max-height: 800px) {
-    .av-auth-brand .av-auth-logo-full {
-        max-width: 16rem;
-        margin-bottom: 1.5rem;
-    }
-}
-
-// Right: navy. Everything inside the form is re-tinted for a dark ground —
-// the inputs stay white so the fields still read as the place you type.
-.av-auth-form-panel {
-    background:
-        radial-gradient(
-            circle at 78% 12%,
-            rgba(200, 150, 58, 0.16) 0%,
-            transparent 50%
-        ),
-        linear-gradient(160deg, var(--av-navy-700) 0%, var(--av-navy-900) 100%);
-    color: #fff;
-    padding: 3rem 2rem;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    h1,
-    h2,
-    h3,
-    .h3 {
-        color: #fff;
-    }
-
-    // Scoped away from .input-group-text: those addons keep a white
-    // background, so a white icon inside one would vanish.
-    .text-body-secondary:not(.input-group-text) {
-        color: rgba(255, 255, 255, 0.72) !important;
-    }
-
-    .form-label,
-    .form-check-label {
-        color: rgba(255, 255, 255, 0.92);
-    }
-
-    .form-text {
-        color: rgba(255, 255, 255, 0.65);
-    }
-
-    // Gold-700 is tuned for white; on navy the lighter gold carries.
-    .text-accent {
-        color: var(--av-gold-500) !important;
-    }
-
-    // A navy button on a navy panel would disappear — go gold instead.
-    .btn-primary {
-        --bs-btn-color: var(--av-navy-900);
-        --bs-btn-bg: var(--av-gold-600);
-        --bs-btn-border-color: var(--av-gold-600);
-        --bs-btn-hover-color: var(--av-navy-900);
-        --bs-btn-hover-bg: var(--av-gold-500);
-        --bs-btn-hover-border-color: var(--av-gold-500);
-        --bs-btn-active-color: var(--av-navy-900);
-        --bs-btn-active-bg: var(--av-gold-700);
-        --bs-btn-active-border-color: var(--av-gold-700);
-        --bs-btn-focus-shadow-rgb: 200, 150, 58;
-    }
-
-    .btn-link {
-        color: rgba(255, 255, 255, 0.75) !important;
-    }
-
-    // Bootstrap's danger red is too dark to read on navy.
-    .invalid-feedback {
-        color: #ffb3bd;
-    }
-
-    // The default focus ring and checked box are both navy, which is
-    // invisible here — the keyboard user would lose the focused field.
-    .form-control:focus,
-    .form-check-input:focus {
-        border-color: var(--av-gold-500);
-        box-shadow: 0 0 0 0.2rem rgba(200, 150, 58, 0.4);
-    }
-
-    .form-check-input:checked {
-        background-color: var(--av-gold-600);
-        border-color: var(--av-gold-600);
-    }
-
-    // Cream plate so the navy logo reads when this panel is the whole page.
-    .av-auth-logo-plate {
-        display: inline-block;
-        background: var(--av-cream);
-        border-radius: 18px;
-        padding: 1.1rem 1.35rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
-    }
-
-    .av-auth-logo-full {
-        display: block;
-        width: 100%;
-        max-width: 12rem;
-        height: auto;
-    }
+    padding: 3rem 1.25rem;
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(200, 150, 58, 0.14) 0%,
+            transparent 60%
+        ),
+        var(--av-cream);
 }
 
 .av-auth-form {
     width: 100%;
-    max-width: 25rem;
+    max-width: 24rem;
+}
+
+.av-auth-logo {
+    display: block;
+    width: 100%;
+    max-width: 14.5rem;
+    height: auto;
+    margin: 0 auto 1.75rem;
+}
+
+.av-auth-card {
+    background: #fff;
+    // Warm-biased border and shadow so the card reads as sitting on cream
+    // rather than on the cool grey the rest of the app uses.
+    border: 1px solid #e8e1d2;
+    border-radius: 14px;
+    padding: 2rem 1.75rem;
+    box-shadow:
+        0 1px 2px rgba(83, 66, 34, 0.04),
+        0 10px 28px rgba(83, 66, 34, 0.07);
+
+    // The heading follows a centred lockup, so it is centred too; the fields
+    // below stay left-aligned where labels belong.
+    > h2,
+    > h2 + p {
+        text-align: center;
+    }
+}
+
+@media (max-width: 400px) {
+    .av-auth-card {
+        padding: 1.5rem 1.25rem;
+    }
+}
+
+// Shorter viewports: pull the lockup in so the form stays above the fold.
+@media (max-height: 760px) {
+    .av-auth {
+        padding: 2rem 1.25rem;
+    }
+
+    .av-auth-logo {
+        max-width: 11rem;
+        margin-bottom: 1.25rem;
+    }
 }
 
 // ---------------------------------------------------------------------------

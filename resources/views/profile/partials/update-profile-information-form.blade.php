@@ -33,13 +33,51 @@
             @method('patch')
 
             <div class="mb-3">
-                <label for="name" class="form-label">Full name</label>
-                <input id="name" type="text" name="name"
-                       value="{{ old('name', auth()->user()->name) }}"
-                       class="form-control @error('name') is-invalid @enderror"
-                       placeholder="Your full name"
-                       required autocomplete="name">
-                @error('name')
+                <label for="last_name" class="form-label">Last name</label>
+                <input id="last_name" type="text" name="last_name"
+                       value="{{ old('last_name', auth()->user()->last_name) }}"
+                       class="form-control @error('last_name') is-invalid @enderror"
+                       placeholder="Dela Cruz"
+                       required autocomplete="family-name">
+                @error('last_name')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-8">
+                    <label for="first_name" class="form-label">First name</label>
+                    <input id="first_name" type="text" name="first_name"
+                           value="{{ old('first_name', auth()->user()->first_name) }}"
+                           class="form-control @error('first_name') is-invalid @enderror"
+                           placeholder="Juan"
+                           required autocomplete="given-name">
+                    @error('first_name')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-4">
+                    <label for="middle_initial" class="form-label">M.I.</label>
+                    <input id="middle_initial" type="text" name="middle_initial" maxlength="1"
+                           value="{{ old('middle_initial', auth()->user()->middle_initial) }}"
+                           class="form-control text-uppercase @error('middle_initial') is-invalid @enderror"
+                           autocomplete="additional-name">
+                    @error('middle_initial')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="phone" class="form-label">
+                    Mobile number <span class="text-body-secondary fw-normal">(optional)</span>
+                </label>
+                <input id="phone" type="tel" name="phone"
+                       value="{{ old('phone', auth()->user()->phone) }}"
+                       class="form-control @error('phone') is-invalid @enderror"
+                       placeholder="09XX XXX XXXX" autocomplete="tel">
+                @error('phone')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>

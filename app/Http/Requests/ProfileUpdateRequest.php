@@ -17,7 +17,11 @@ class ProfileUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            // `name` is composed from these by the User model on save.
+            'last_name' => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'middle_initial' => ['nullable', 'alpha', 'size:1'],
+            'phone' => ['nullable', 'string', 'max:32', 'regex:/^[0-9+()\-.\s]{7,32}$/'],
             'email' => [
                 'required',
                 'string',

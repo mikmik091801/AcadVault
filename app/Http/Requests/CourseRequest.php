@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\Program;
 use App\Enums\Role;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -34,6 +35,13 @@ class CourseRequest extends FormRequest
                 // Only actual faculty members can be assigned to teach.
                 Rule::exists('users', 'id')->where('role', Role::Faculty->value),
             ],
+
+            // Curriculum placement. All optional: an unplaced subject stays
+            // open to every student.
+            'program' => ['nullable', 'string', Rule::in(Program::values())],
+            'year_level' => ['nullable', 'integer', 'min:1', 'max:5'],
+            'semester' => ['nullable', 'integer', 'min:1', 'max:3'],
+            'units' => ['required', 'integer', 'min:1', 'max:12'],
         ];
     }
 

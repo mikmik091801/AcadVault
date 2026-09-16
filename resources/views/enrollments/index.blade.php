@@ -115,43 +115,58 @@
         <div class="card-header bg-white">
             <i class="bi bi-plus-circle text-accent me-2" aria-hidden="true"></i>
             Available classes
+            <span class="small text-body-secondary ms-2">
+                {{ $student->program }} · {{ $student->yearLevelLabel() }}
+            </span>
         </div>
 
-        @if ($available->isEmpty())
+        @if ($available->isEmpty() && ! $curriculumExists)
+            <x-empty-state icon="bi-journal-x" title="No curriculum for your program yet"
+                message="The subjects for {{ $student->program }} have not been entered into AcadVault. Ask the registrar to add them." />
+        @elseif ($available->isEmpty())
             <x-empty-state icon="bi-check2-all" title="Nothing left to enroll in"
-                message="You already hold a place in every class on offer." />
+                message="Every subject in your curriculum for this year is already on your list." />
         @else
-            <div class="table-responsive">
-                <table class="table av-table table-striped align-middle">
-                    <thead>
-                        <tr>
-                            <th scope="col">Code</th>
-                            <th scope="col">Course</th>
-                            <th scope="col">Instructor</th>
-                            <th scope="col" class="text-end">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($available as $course)
+            @foreach ($available as $semester => $courses)
+                <div class="card-body border-top py-2 bg-light">
+                    <span class="small fw-semibold text-uppercase text-body-secondary"
+                          style="letter-spacing:.06em;">{{ $semester }}</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table av-table table-striped align-middle mb-0">
+                        <thead>
                             <tr>
-                                <td><code class="av-hash">{{ $course->code }}</code></td>
-                                <td class="fw-semibold">{{ $course->title }}</td>
-                                <td>{{ $course->faculty?->name ?? 'Unassigned' }}</td>
-                                <td class="text-end">
-                                    <form method="POST" action="{{ route('enrollments.store') }}"
-                                          class="d-inline">
-                                        @csrf
-                                        <input type="hidden" name="course_id" value="{{ $course->id }}">
-                                        <button type="submit" class="btn btn-sm btn-primary">
-                                            <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Enroll
-                                        </button>
-                                    </form>
-                                </td>
+                                <th scope="col">Code</th>
+                                <th scope="col">Subject</th>
+                                <th scope="col">Units</th>
+                                <th scope="col">Instructor</th>
+                                <th scope="col" class="text-end">Action</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            @foreach ($courses as $course)
+                                <tr>
+                                    <td><code class="av-hash">{{ $course->code }}</code></td>
+                                    <td class="fw-semibold">{{ $course->title }}</td>
+                                    <td>{{ $course->units }}</td>
+                                    <td>{{ $course->faculty?->name ?? 'Unassigned' }}</td>
+                                    <td class="text-end">
+                                        <form method="POST" action="{{ route('enrollments.store') }}"
+                                              class="d-inline">
+                                            @csrf
+                                            <input type="hidden" name="course_id" value="{{ $course->id }}">
+                                            <button type="submit" class="btn btn-sm btn-primary">
+                                                <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Enroll
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endforeach
         @endif
     </div>
 

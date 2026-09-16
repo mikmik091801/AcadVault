@@ -42,14 +42,23 @@ class EnrollmentController extends Controller implements HasMiddleware
             ->sortBy(fn (Enrollment $e) => $e->course?->code)
             ->values();
 
-        // Anything they are not already holding a row for.
+        // Their own curriculum, minus anything they already hold a row for.
         $available = Course::query()
             ->with('faculty')
+            ->inCurriculumFor($student)
             ->whereDoesntHave('enrollments', fn ($q) => $q->where('student_id', $student->id))
+            ->orderBy('semester')
             ->orderBy('code')
-            ->get();
+            ->get()
+            ->groupBy(fn (Course $course) => $course->semesterLabel() ?? 'Other subjects');
+
+        // Told apart so the empty state can say which it is: a program whose
+        // curriculum nobody has entered yet reads very differently to a student
+        // who has simply enrolled in everything already.
+        $curriculumExists = Course::where('program', $student->program)->exists();
 
         return view('enrollments.index', [
+            'curriculumExists' => $curriculumExists,
             'student' => $student,
             'enrollments' => $enrollments,
             'available' => $available,

@@ -120,7 +120,8 @@ class UserManagementTest extends TestCase
 
         $this->actingAs($admin)
             ->post(route('users.store'), [
-                'name' => 'New Registrar',
+                'last_name' => 'Registrar',
+                'first_name' => 'New',
                 'email' => 'new.registrar@example.com',
                 'role' => 'registrar',
                 'password' => 'correct-horse-battery',
@@ -148,7 +149,8 @@ class UserManagementTest extends TestCase
 
         $this->actingAs($admin)
             ->post(route('users.store'), [
-                'name' => 'Bad Input',
+                'last_name' => 'Input',
+                'first_name' => 'Bad',
                 'email' => $existing->email,
                 'role' => 'superuser',
                 'password' => 'correct-horse-battery',
@@ -170,7 +172,8 @@ class UserManagementTest extends TestCase
 
         $this->actingAs($admin)
             ->put(route('users.update', $user), [
-                'name' => 'Rising Star',
+                'last_name' => 'Star',
+                'first_name' => 'Rising',
                 'email' => $user->email,
                 'role' => 'registrar',
             ])
@@ -192,7 +195,9 @@ class UserManagementTest extends TestCase
 
         $this->actingAs($admin)
             ->put(route('users.update', $user), [
-                'name' => 'Renamed Faculty',
+                'last_name' => 'Faculty',
+                'first_name' => 'Renamed',
+                'middle_initial' => '', // the form always posts this, blank or not
                 'email' => $user->email,
                 'role' => 'faculty',
                 'password' => '',
@@ -213,7 +218,8 @@ class UserManagementTest extends TestCase
 
         $this->actingAs($admin)
             ->put(route('users.update', $user), [
-                'name' => $user->name,
+                'last_name' => $user->last_name,
+                'first_name' => $user->first_name,
                 'email' => $user->email,
                 'role' => 'faculty',
                 'password' => 'a-brand-new-password',
@@ -230,7 +236,8 @@ class UserManagementTest extends TestCase
 
         $this->actingAs($admin)
             ->put(route('users.update', $admin), [
-                'name' => $admin->name,
+                'last_name' => $admin->last_name,
+                'first_name' => $admin->first_name,
                 'email' => $admin->email,
                 'role' => 'student',
             ])
@@ -245,7 +252,9 @@ class UserManagementTest extends TestCase
 
         $this->actingAs($admin)
             ->put(route('users.update', $admin), [
-                'name' => 'Renamed Admin',
+                'last_name' => 'Admin',
+                'first_name' => 'Renamed',
+                'middle_initial' => '',
                 'email' => $admin->email,
                 'role' => 'admin',
             ])
@@ -261,7 +270,8 @@ class UserManagementTest extends TestCase
 
         $this->actingAs($admin)
             ->put(route('users.update', $profile->user), [
-                'name' => $profile->user->name,
+                'last_name' => $profile->user->last_name,
+                'first_name' => $profile->user->first_name,
                 'email' => $profile->user->email,
                 'role' => 'faculty',
             ])
@@ -277,7 +287,8 @@ class UserManagementTest extends TestCase
 
         $this->actingAs($admin)
             ->put(route('users.update', $user), [
-                'name' => 'Edited Name',
+                'last_name' => 'Name',
+                'first_name' => 'Edited',
                 'email' => $user->email,
                 'role' => 'faculty',
             ]);

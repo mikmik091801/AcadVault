@@ -12,12 +12,70 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role'])]
+#[Fillable(['name', 'last_name', 'first_name', 'middle_initial', 'phone', 'email', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    /**
+     * Keep `name` in step with the parts it is built from.
+     *
+     * `name` is what the whole app displays and what the document fingerprints
+     * hash, so it stays the single source for reading. Accounts created before
+     * the parts existed — and the seeders, which still pass a whole name — are
+     * left alone.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (self $user) {
+            if (blank($user->first_name) && blank($user->last_name)) {
+                return;
+            }
+
+            // An explicitly supplied name wins, so callers that still set one
+            // directly — seeders, factories, older code — are never overruled.
+            if ($user->isDirty('name')) {
+                return;
+            }
+
+            if ($user->isDirty(['first_name', 'middle_initial', 'last_name'])) {
+                $user->name = $user->composedName();
+            }
+        });
+    }
+
+    /**
+     * "Juan P. Dela Cruz" — the parts joined the way they are displayed.
+     */
+    public function composedName(): string
+    {
+        $initial = filled($this->middle_initial)
+            ? strtoupper($this->middle_initial).'.'
+            : null;
+
+        return trim(implode(' ', array_filter([
+            $this->first_name,
+            $initial,
+            $this->last_name,
+        ])));
+    }
+
+    /**
+     * "Dela Cruz, Juan P." — the way a registrar files it.
+     */
+    public function filedName(): string
+    {
+        $given = trim(implode(' ', array_filter([
+            $this->first_name,
+            filled($this->middle_initial) ? strtoupper($this->middle_initial).'.' : null,
+        ])));
+
+        return blank($this->last_name)
+            ? ($given ?: $this->name)
+            : trim($this->last_name.($given === '' ? '' : ", {$given}"));
+    }
 
     /**
      * Get the attributes that should be cast.

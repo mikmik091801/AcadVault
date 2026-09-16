@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\Program;
 use App\Enums\Role;
 use App\Models\Student;
 use App\Models\User;
@@ -20,14 +21,7 @@ class StudentFactory extends Factory
         return [
             'user_id' => User::factory()->student(),
             'student_number' => date('Y').'-'.fake()->unique()->numberBetween(10000, 99999),
-            'program' => fake()->randomElement([
-                'BS Computer Science',
-                'BS Information Technology',
-                'BS Information Systems',
-                'BS Civil Engineering',
-                'BS Accountancy',
-                'BS Nursing',
-            ]),
+            'program' => fake()->randomElement(Program::values()),
             'year_level' => fake()->numberBetween(1, 4),
         ];
     }

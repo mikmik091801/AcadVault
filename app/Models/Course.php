@@ -3,15 +3,58 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['code', 'title', 'faculty_id'])]
+#[Fillable(['code', 'title', 'faculty_id', 'program', 'year_level', 'semester', 'units'])]
 class Course extends Model
 {
     use HasFactory;
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'year_level' => 'integer',
+            'semester' => 'integer',
+            'units' => 'integer',
+        ];
+    }
+
+    /**
+     * Subjects a student may enroll in: the ones in their own program and year,
+     * plus any subject not yet mapped to a curriculum, which stays open to all.
+     */
+    public function scopeInCurriculumFor(Builder $query, Student $student): Builder
+    {
+        return $query
+            ->where(function (Builder $program) use ($student) {
+                $program->whereNull('program')
+                    ->orWhere('program', $student->program);
+            })
+            ->where(function (Builder $year) use ($student) {
+                $year->whereNull('year_level')
+                    ->orWhere('year_level', $student->year_level);
+            });
+    }
+
+    /**
+     * "1st Semester" style label for tables and the enrollment portal.
+     */
+    public function semesterLabel(): ?string
+    {
+        return match ($this->semester) {
+            1 => '1st Semester',
+            2 => '2nd Semester',
+            3 => 'Summer',
+            default => null,
+        };
+    }
 
     /**
      * The faculty member teaching this course.

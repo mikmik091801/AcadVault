@@ -30,16 +30,27 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+        $validated = $request->validate([
+            'last_name' => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'middle_initial' => ['nullable', 'alpha', 'size:1'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            // Permissive on purpose: mobile, landline and +63 forms are all valid.
+            'phone' => ['nullable', 'string', 'max:32', 'regex:/^[0-9+()\-.\s]{7,32}$/'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'middle_initial.size' => 'Enter a single letter, or leave it blank.',
+            'phone.regex' => 'Enter a valid contact number — digits, and optionally + ( ) - or spaces.',
         ]);
 
+        // `name` is composed from the parts by the User model when it saves.
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'last_name' => $validated['last_name'],
+            'first_name' => $validated['first_name'],
+            'middle_initial' => $validated['middle_initial'] ?? null,
+            'phone' => $validated['phone'] ?? null,
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
         ]);
 
         event(new Registered($user));

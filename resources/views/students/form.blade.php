@@ -35,11 +35,34 @@
     </div>
 
     <div class="col-md-8">
+        @php
+            $selectedProgram = old('program', $student?->program);
+            $knownPrograms = \App\Enums\Program::values();
+        @endphp
+
         <label for="program" class="form-label">Program</label>
-        <input id="program" type="text" name="program"
-               value="{{ old('program', $student?->program) }}"
-               class="form-control @error('program') is-invalid @enderror"
-               placeholder="e.g. BS Computer Science" required>
+        <select id="program" name="program"
+                class="form-select @error('program') is-invalid @enderror" required>
+            <option value="" @selected($selectedProgram === null || $selectedProgram === '')>
+                Select a program…
+            </option>
+
+            @if ($selectedProgram && ! in_array($selectedProgram, $knownPrograms, true))
+                {{-- A profile created before the catalog was fixed keeps its own
+                     value selectable, so editing it does not force a change. --}}
+                <option value="{{ $selectedProgram }}" selected>{{ $selectedProgram }}</option>
+            @endif
+
+            @foreach (\App\Enums\Program::groupedByCollege() as $college => $programs)
+                <optgroup label="{{ $college }}">
+                    @foreach ($programs as $program)
+                        <option value="{{ $program->value }}" @selected($selectedProgram === $program->value)>
+                            {{ $program->value }}
+                        </option>
+                    @endforeach
+                </optgroup>
+            @endforeach
+        </select>
         @error('program')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror

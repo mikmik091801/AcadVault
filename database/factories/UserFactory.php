@@ -25,8 +25,12 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        // `name` is composed from the parts by the User model on save.
         return [
-            'name' => fake()->name(),
+            'last_name' => fake()->lastName(),
+            'first_name' => fake()->firstName(),
+            'middle_initial' => fake()->randomLetter(),
+            'phone' => '0917 '.fake()->numerify('### ####'),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),

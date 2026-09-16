@@ -24,7 +24,11 @@ class UserRequest extends FormRequest
         $user = $this->targetUser();
 
         return [
-            'name' => ['required', 'string', 'max:255'],
+            // `name` is composed from these by the User model on save.
+            'last_name' => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'middle_initial' => ['nullable', 'alpha', 'size:1'],
+            'phone' => ['nullable', 'string', 'max:32', 'regex:/^[0-9+()\-.\s]{7,32}$/'],
             'email' => [
                 'required',
                 'string',
@@ -115,6 +119,8 @@ class UserRequest extends FormRequest
         return [
             'email.unique' => 'Another account already uses that email address.',
             'email.lowercase' => 'The email address must be in lowercase.',
+            'middle_initial.size' => 'Enter a single letter, or leave it blank.',
+            'phone.regex' => 'Enter a valid contact number — digits, and optionally + ( ) - or spaces.',
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Program;
 use App\Enums\Role;
 use App\Models\Student;
 use App\Models\User;
@@ -22,33 +23,43 @@ class UserSeeder extends Seeder
         $password = 'password';
 
         // ---- One account per role -------------------------------------
-        $this->user('Sofia Villanueva', 'admin@acadvault.test', Role::Admin, $password);
-        $this->user('Elena Reyes', 'registrar@acadvault.test', Role::Registrar, $password);
-        $this->user('Dr. Ramon Cruz', 'faculty@acadvault.test', Role::Faculty, $password);
+        // [last, first, middle initial, mobile]
+        $this->user(['Villanueva', 'Sofia', 'M', '0917 555 0101'], 'admin@acadvault.test', Role::Admin, $password);
+        $this->user(['Reyes', 'Elena', 'B', '0917 555 0102'], 'registrar@acadvault.test', Role::Registrar, $password);
+        $this->user(['Cruz', 'Ramon', 'T', '0917 555 0103'], 'faculty@acadvault.test', Role::Faculty, $password);
 
-        $primaryStudent = $this->user('Juan Dela Cruz', 'student@acadvault.test', Role::Student, $password);
-        $this->studentProfile($primaryStudent, '2026-01001', 'BS Computer Science', 3);
+        $primaryStudent = $this->user(['Dela Cruz', 'Juan', 'P', '0917 555 0201'], 'student@acadvault.test', Role::Student, $password);
+        $this->studentProfile($primaryStudent, '2026-01001', Program::ComputerScience, 3);
 
         // ---- Extra students, for list and pagination testing -----------
         $extras = [
-            ['Ana Bautista', 'ana.bautista@acadvault.test', '2026-01002', 'BS Information Technology', 2],
-            ['Miguel Santos', 'miguel.santos@acadvault.test', '2026-01003', 'BS Computer Science', 4],
-            ['Liza Mendoza', 'liza.mendoza@acadvault.test', '2026-01004', 'BS Information Systems', 1],
-            ['Paolo Garcia', 'paolo.garcia@acadvault.test', '2026-01005', 'BS Information Technology', 3],
+            [['Bautista', 'Ana', 'L', '0917 555 0202'], 'ana.bautista@acadvault.test', '2026-01002', Program::InformationTechnology, 2],
+            [['Santos', 'Miguel', 'R', '0917 555 0203'], 'miguel.santos@acadvault.test', '2026-01003', Program::ComputerScience, 4],
+            [['Mendoza', 'Liza', 'A', '0917 555 0204'], 'liza.mendoza@acadvault.test', '2026-01004', Program::InformationTechnology, 1],
+            [['Garcia', 'Paolo', 'D', '0917 555 0205'], 'paolo.garcia@acadvault.test', '2026-01005', Program::InformationTechnology, 3],
         ];
 
-        foreach ($extras as [$name, $email, $number, $program, $year]) {
-            $user = $this->user($name, $email, Role::Student, $password);
+        foreach ($extras as [$parts, $email, $number, $program, $year]) {
+            $user = $this->user($parts, $email, Role::Student, $password);
             $this->studentProfile($user, $number, $program, $year);
         }
     }
 
-    private function user(string $name, string $email, Role $role, string $password): User
+    /**
+     * @param  array{0: string, 1: string, 2: ?string, 3: ?string}  $parts
+     */
+    private function user(array $parts, string $email, Role $role, string $password): User
     {
+        [$last, $first, $initial, $phone] = $parts;
+
+        // `name` is composed from the parts by the User model on save.
         return User::updateOrCreate(
             ['email' => $email],
             [
-                'name' => $name,
+                'last_name' => $last,
+                'first_name' => $first,
+                'middle_initial' => $initial,
+                'phone' => $phone,
                 'role' => $role,
                 'password' => $password,
                 'email_verified_at' => now(),
@@ -56,13 +67,13 @@ class UserSeeder extends Seeder
         );
     }
 
-    private function studentProfile(User $user, string $number, string $program, int $year): Student
+    private function studentProfile(User $user, string $number, Program $program, int $year): Student
     {
         return Student::updateOrCreate(
             ['user_id' => $user->id],
             [
                 'student_number' => $number,
-                'program' => $program,
+                'program' => $program->value,
                 'year_level' => $year,
             ],
         );
