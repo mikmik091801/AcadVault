@@ -1,5 +1,5 @@
 # Use a PHP CLI image; for a demo free deployment we run artisan serve.
-FROM php:8.3-cli
+FROM php:8.4-cli
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git unzip libpq-dev libzip-dev \
