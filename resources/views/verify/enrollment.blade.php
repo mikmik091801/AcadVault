@@ -48,7 +48,7 @@
                 <x-brand-mark :size="24" />
             </span>
             <span class="text-white fw-bold fs-5">AcadVault</span>
-            <span class="text-white-50 small ms-2 d-none d-sm-inline">Certificate verification</span>
+            <span class="text-white-50 small ms-2 d-none d-sm-inline">{{ \App\Enums\Program::COLLEGE }} &middot; Certificate verification</span>
         </div>
     </div>
 

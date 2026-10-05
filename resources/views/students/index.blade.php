@@ -52,7 +52,11 @@
                                     <div class="small text-body-secondary">{{ $student->user?->email }}</div>
                                 </td>
                                 <td><code class="av-hash">{{ $student->student_number }}</code></td>
-                                <td>{{ $student->program }}</td>
+                                <td>
+                                    <span class="badge badge-status badge-role" title="{{ $student->program }}">
+                                        {{ \App\Enums\Program::shortNameFor($student->program) }}
+                                    </span>
+                                </td>
                                 <td>{{ $student->yearLevelLabel() }}</td>
                                 <td>
                                     <span class="badge badge-status badge-pending">

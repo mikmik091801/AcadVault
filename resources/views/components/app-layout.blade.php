@@ -12,6 +12,8 @@
     @vite(['resources/css/app.scss', 'resources/js/app.js'])
 </head>
 <body>
+    <div class="av-progress" aria-hidden="true"></div>
+
     @php
         $user = auth()->user();
         $role = $user?->role;
@@ -31,7 +33,7 @@
         </main>
 
         <footer class="text-center text-body-secondary py-3" style="font-size:.78rem;">
-            AcadVault &mdash; Academic Records Management System &middot;
+            AcadVault &mdash; {{ \App\Enums\Program::COLLEGE }}, {{ \App\Enums\Program::UNIVERSITY }} &middot;
             &copy; {{ date('Y') }}
         </footer>
     </div>

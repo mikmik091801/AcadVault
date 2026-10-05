@@ -9,8 +9,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
- * The program field is a picker over the University of Mindanao catalog rather
- * than free text, so the stored value is always a real program.
+ * The program field is a picker over the College of Computing Education's
+ * programs rather than free text, so the stored value is always a real program.
  */
 class StudentProgramTest extends TestCase
 {
@@ -29,15 +29,27 @@ class StudentProgramTest extends TestCase
         ], $overrides);
     }
 
-    public function test_the_form_offers_the_university_catalog_grouped_by_college(): void
+    public function test_the_form_offers_only_the_college_of_computing_education_programs(): void
     {
         $this->actingAs(User::factory()->registrar()->create())
             ->get(route('students.create'))
             ->assertOk()
             ->assertSee('Bachelor of Science in Computer Science')
-            ->assertSee('Bachelor of Science in Nursing')
+            ->assertSee('Bachelor of Multimedia Arts')
             ->assertSee('College of Computing Education')
-            ->assertSee('College of Engineering Education');
+            ->assertDontSee('Bachelor of Science in Nursing')
+            ->assertDontSee('College of Engineering Education');
+    }
+
+    public function test_a_program_from_another_college_is_rejected(): void
+    {
+        $this->actingAs(User::factory()->registrar()->create())
+            ->post(route('students.store'), $this->payload([
+                'program' => 'Bachelor of Science in Computer Engineering',
+            ]))
+            ->assertSessionHasErrors('program');
+
+        $this->assertDatabaseCount('students', 0);
     }
 
     public function test_a_program_from_the_catalog_is_accepted(): void
@@ -103,6 +115,6 @@ class StudentProgramTest extends TestCase
             'Every case must appear exactly once in the grouped list.'
         );
 
-        $this->assertCount(10, $grouped);
+        $this->assertSame([Program::COLLEGE], array_keys($grouped));
     }
 }

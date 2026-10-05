@@ -81,24 +81,50 @@
                             <thead>
                                 <tr>
                                     <th scope="col">Student</th>
-                                    <th scope="col">Student no.</th>
-                                    <th scope="col">Program</th>
-                                    <th scope="col">Year</th>
+                                    <th scope="col" class="d-none d-md-table-cell">Program</th>
                                     <th scope="col">Status</th>
+                                    <th scope="col" class="text-end">Grade</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($roster as $enrollment)
+                                    @php
+                                        $grade = $gradesByStudent->get($enrollment->student_id);
+                                    @endphp
                                     <tr>
-                                        <td class="fw-semibold">{{ $enrollment->student?->user?->name }}</td>
-                                        <td><code class="av-hash">{{ $enrollment->student?->student_number }}</code></td>
-                                        <td>{{ $enrollment->student?->program }}</td>
-                                        <td>{{ $enrollment->student?->yearLevelLabel() }}</td>
+                                        <td>
+                                            <div class="fw-semibold">{{ $enrollment->student?->user?->name }}</div>
+                                            <code class="av-hash text-nowrap">{{ $enrollment->student?->student_number }}</code>
+                                        </td>
+                                        <td class="d-none d-md-table-cell">
+                                            <span class="badge badge-status badge-role" title="{{ $enrollment->student?->program }}">
+                                                {{ \App\Enums\Program::shortNameFor($enrollment->student?->program) }}
+                                            </span>
+                                            <div class="small text-body-secondary">{{ $enrollment->student?->yearLevelLabel() }}</div>
+                                        </td>
                                         <td>
                                             <span class="badge badge-status {{ $enrollment->status->badgeClass() }}">
                                                 <i class="bi {{ $enrollment->status->icon() }}" aria-hidden="true"></i>
                                                 {{ $enrollment->status->label() }}
                                             </span>
+                                        </td>
+                                        <td class="text-end text-nowrap">
+                                            @if ($grade)
+                                                <a href="{{ route('records.show', $grade) }}"
+                                                   class="av-grade-chip"
+                                                   aria-label="View grade for {{ $enrollment->student?->user?->name }}">
+                                                    {{ $grade->grade }}
+                                                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                                                </a>
+                                            @elseif ($canGrade)
+                                                <a href="{{ route('records.create', ['course_id' => $course->id, 'student_id' => $enrollment->student_id, 'return_to_course' => 1]) }}"
+                                                   class="btn btn-sm btn-outline-accent"
+                                                   aria-label="Enter grade for {{ $enrollment->student?->user?->name }}">
+                                                    <i class="bi bi-plus-lg me-sm-1" aria-hidden="true"></i><span class="d-none d-sm-inline">Enter grade</span>
+                                                </a>
+                                            @else
+                                                <span class="text-body-secondary">—</span>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -128,7 +154,7 @@
                                 <tr>
                                     <th scope="col">Student</th>
                                     <th scope="col">Grade</th>
-                                    <th scope="col">Remarks</th>
+                                    <th scope="col" class="d-none d-sm-table-cell">Remarks</th>
                                     <th scope="col" class="text-end">Action</th>
                                 </tr>
                             </thead>
@@ -140,9 +166,17 @@
                                             <div class="small text-body-secondary">
                                                 {{ $record->student?->student_number }}
                                             </div>
+                                            {{-- Grades filed before enrolment existed, or for a
+                                                 student who has since dropped. --}}
+                                            @unless ($roster->contains('student_id', $record->student_id))
+                                                <span class="badge badge-status badge-warning-soft mt-1"
+                                                      title="This student is not currently enrolled in this course.">
+                                                    <i class="bi bi-exclamation-circle" aria-hidden="true"></i>Not on class list
+                                                </span>
+                                            @endunless
                                         </td>
                                         <td class="fw-semibold">{{ $record->grade }}</td>
-                                        <td class="text-body-secondary">{{ $record->remarks ?? '—' }}</td>
+                                        <td class="text-body-secondary d-none d-sm-table-cell">{{ $record->remarks ?? '—' }}</td>
                                         <td class="text-end">
                                             <a href="{{ route('records.show', $record) }}"
                                                class="btn btn-sm btn-outline-secondary">

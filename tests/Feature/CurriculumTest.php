@@ -67,7 +67,7 @@ class CurriculumTest extends TestCase
     public function test_an_unplaced_subject_stays_open_to_everyone(): void
     {
         $student = Student::factory()->create([
-            'program' => Program::ComputerEngineering->value,
+            'program' => Program::MultimediaArts->value,
             'year_level' => 3,
         ]);
 
@@ -100,7 +100,7 @@ class CurriculumTest extends TestCase
     public function test_a_program_with_no_curriculum_says_so_rather_than_looking_finished(): void
     {
         $student = Student::factory()->create([
-            'program' => Program::ComputerEngineering->value,
+            'program' => Program::MultimediaArts->value,
             'year_level' => 1,
         ]);
 

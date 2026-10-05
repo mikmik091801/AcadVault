@@ -47,7 +47,7 @@
             <label for="email" class="form-label">Email address</label>
             <input id="email" type="email" name="email" value="{{ old('email') }}"
                    class="form-control @error('email') is-invalid @enderror"
-                   placeholder="you@university.edu"
+                   placeholder="you@umindanao.edu.ph"
                    required autocomplete="username">
             @error('email')
                 <div class="invalid-feedback">{{ $message }}</div>

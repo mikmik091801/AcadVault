@@ -2,12 +2,17 @@
 
 namespace Tests\Feature;
 
+use App\Enums\Role;
 use App\Models\AcademicRecord;
 use App\Models\AuditLog;
+use App\Models\Course;
+use App\Models\Enrollment;
+use App\Models\Student;
 use App\Models\User;
 use App\Support\AuditLogger;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class AuditLogTest extends TestCase
@@ -213,8 +218,9 @@ class AuditLogTest extends TestCase
     public function test_creating_a_record_is_logged_only_once(): void
     {
         $registrar = User::factory()->registrar()->create();
-        $student = \App\Models\Student::factory()->create();
-        $course = \App\Models\Course::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        Enrollment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id]);
 
         $this->actingAs($registrar)->post(route('records.store'), [
             'student_id' => $student->id,
@@ -240,7 +246,7 @@ class AuditLogTest extends TestCase
             ->get(route('audit-logs.index'))->assertOk();
 
         foreach (['registrar', 'faculty', 'student'] as $role) {
-            $this->actingAs(User::factory()->role(\App\Enums\Role::from($role))->create())
+            $this->actingAs(User::factory()->role(Role::from($role))->create())
                 ->get(route('audit-logs.index'))->assertForbidden();
         }
     }
@@ -292,8 +298,9 @@ class AuditLogTest extends TestCase
     {
         $admin = User::factory()->admin()->create();
 
-        $old = AuditLog::factory()->create(['ip_address' => '10.9.9.9']);
-        $old->forceFill(['created_at' => now()->subDays(30)])->save();
+        // Created already backdated: entries are append-only, so one cannot be
+        // moved into the past after the fact.
+        AuditLog::factory()->create(['ip_address' => '10.9.9.9', 'created_at' => now()->subDays(30)]);
 
         AuditLog::factory()->create(['ip_address' => '10.5.5.5']);
 
@@ -324,10 +331,31 @@ class AuditLogTest extends TestCase
             ->assertSee('192.168.44.7');
     }
 
+    public function test_an_audit_entry_cannot_be_changed(): void
+    {
+        $log = AuditLogger::log(AuditLogger::LOGIN_SUCCESS);
+
+        $this->expectException(\LogicException::class);
+
+        $log->update(['action' => AuditLogger::LOGOUT]);
+    }
+
+    public function test_an_audit_entry_cannot_be_deleted(): void
+    {
+        $log = AuditLogger::log(AuditLogger::LOGIN_SUCCESS);
+
+        try {
+            $log->delete();
+            $this->fail('Deleting an audit entry should have thrown.');
+        } catch (\LogicException) {
+            $this->assertModelExists($log);
+        }
+    }
+
     public function test_audit_logging_failure_does_not_break_the_request(): void
     {
         // Simulate the audit table being unavailable.
-        \Illuminate\Support\Facades\Schema::drop('audit_logs');
+        Schema::drop('audit_logs');
 
         $this->assertNull(AuditLogger::log(AuditLogger::RECORD_VIEWED));
     }

@@ -1,7 +1,7 @@
 <x-guest-layout title="Sign in">
 
     <h2 class="h3 fw-bold mb-1">Welcome back</h2>
-    <p class="text-body-secondary mb-4">Sign in to access your academic records.</p>
+    <p class="text-body-secondary mb-4">Sign in to your AcadVault account.</p>
 
     {{-- Session status (e.g. "password reset link sent") --}}
     @if (session('status'))
@@ -31,7 +31,7 @@
                 <input id="email" type="email" name="email"
                        value="{{ old('email') }}"
                        class="form-control @error('email') is-invalid @enderror"
-                       placeholder="you@university.edu"
+                       placeholder="you@umindanao.edu.ph"
                        required autofocus autocomplete="username">
                 @error('email')
                     <div class="invalid-feedback">{{ $message }}</div>

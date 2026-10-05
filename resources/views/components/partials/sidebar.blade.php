@@ -65,7 +65,7 @@
         </span>
         <span>
             <span class="av-brand-name d-block">AcadVault</span>
-            <span class="av-brand-sub">Records System</span>
+            <span class="av-brand-sub" title="{{ \App\Enums\Program::COLLEGE }}">CCE Records</span>
         </span>
     </a>
 

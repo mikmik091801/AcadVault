@@ -19,8 +19,16 @@
         <i class="bi bi-list" aria-hidden="true"></i>
     </button>
 
+    {{-- Which college this workspace belongs to; the page itself carries its
+         own title in the header below. --}}
     <div class="flex-grow-1 min-width-0">
-        <span class="fw-semibold d-none d-sm-inline" style="color:var(--av-navy-900);">{{ $title }}</span>
+        <div class="av-topbar-context">
+            <span class="av-topbar-context-icon" aria-hidden="true"><i class="bi bi-cpu"></i></span>
+            <span class="min-width-0">
+                <span class="av-topbar-college">{{ \App\Enums\Program::COLLEGE }}</span>
+                <span class="av-topbar-university d-none d-sm-block">{{ \App\Enums\Program::UNIVERSITY }}</span>
+            </span>
+        </div>
     </div>
 
     <div class="dropdown">
@@ -58,11 +66,4 @@
             </li>
         </ul>
     </div>
-
-    <form method="POST" action="{{ route('logout') }}" class="d-none d-md-block">
-        @csrf
-        <button type="submit" class="btn btn-outline-secondary btn-sm">
-            <i class="bi bi-box-arrow-right me-1" aria-hidden="true"></i>Logout
-        </button>
-    </form>
 </header>

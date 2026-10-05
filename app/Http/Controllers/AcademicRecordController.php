@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AcademicRecordRequest;
 use App\Models\AcademicRecord;
 use App\Models\Course;
+use App\Models\Enrollment;
 use App\Models\Student;
 use App\Support\AuditLogger;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -51,9 +53,17 @@ class AcademicRecordController extends Controller implements HasMiddleware
     {
         $this->authorize('create', AcademicRecord::class);
 
+        $courses = $this->assignableCourses($request);
+
         return view('records.create', [
             'students' => Student::with('user')->get()->sortBy('user.name'),
-            'courses' => $this->assignableCourses($request),
+            'courses' => $courses,
+            'rosters' => $this->rosters($courses),
+            'prefill' => [
+                'student_id' => $request->integer('student_id') ?: null,
+                'course_id' => $request->integer('course_id') ?: null,
+            ],
+            'returnToCourse' => $request->boolean('return_to_course'),
         ]);
     }
 
@@ -66,6 +76,16 @@ class AcademicRecordController extends Controller implements HasMiddleware
             ...$request->validated(),
             'created_by' => $request->user()->id,
         ]);
+
+        // Grading from a class list goes back to that list, so the next
+        // student is one click away.
+        if ($request->boolean('return_to_course')) {
+            $record->load('student.user');
+
+            return redirect()
+                ->route('courses.show', $record->course_id)
+                ->with('success', "Grade saved for {$record->student?->user?->name}.");
+        }
 
         return redirect()
             ->route('records.show', $record)
@@ -89,10 +109,13 @@ class AcademicRecordController extends Controller implements HasMiddleware
     {
         $this->authorize('update', $record);
 
+        $courses = $this->assignableCourses($request);
+
         return view('records.edit', [
             'record' => $record,
             'students' => Student::with('user')->get()->sortBy('user.name'),
-            'courses' => $this->assignableCourses($request),
+            'courses' => $courses,
+            'rosters' => $this->rosters($courses),
         ]);
     }
 
@@ -150,5 +173,23 @@ class AcademicRecordController extends Controller implements HasMiddleware
             ->when($user->isFaculty(), fn ($q) => $q->where('faculty_id', $user->id))
             ->orderBy('code')
             ->get();
+    }
+
+    /**
+     * Who is actively enrolled in each course, so the form can narrow the
+     * student list to the chosen class.
+     *
+     * @param  Collection<int, Course>  $courses
+     * @return array<int, array<int, int>>
+     */
+    private function rosters(Collection $courses): array
+    {
+        return Enrollment::query()
+            ->whereIn('course_id', $courses->modelKeys())
+            ->active()
+            ->get(['course_id', 'student_id'])
+            ->groupBy('course_id')
+            ->map(fn (Collection $enrollments) => $enrollments->pluck('student_id')->values()->all())
+            ->all();
     }
 }

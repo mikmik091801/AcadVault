@@ -13,7 +13,7 @@
                         @csrf
                         @method('put')
 
-                        @include('records.form', ['record' => $record, 'students' => $students, 'courses' => $courses])
+                        @include('records.form', ['record' => $record, 'students' => $students, 'courses' => $courses, 'rosters' => $rosters, 'prefill' => []])
 
                         <div class="d-flex justify-content-end gap-2 mt-4">
                             <a href="{{ route('records.show', $record) }}" class="btn btn-light">Cancel</a>

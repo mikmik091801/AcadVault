@@ -267,9 +267,35 @@ body {
         color: #6b7280;
     }
 
-    &:hover {
+    .stat-value {
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+// Only cards that lead somewhere react to the pointer, so the lift is an
+// honest signal that the card is clickable.
+.stat-card-link {
+    .stat-card-arrow {
+        color: #b6c0ce;
+        transition:
+            transform 0.2s ease,
+            color 0.2s ease;
+    }
+
+    &:hover,
+    &:focus-within {
         transform: translateY(-2px);
         box-shadow: var(--av-shadow-lift);
+
+        .stat-card-arrow {
+            color: var(--av-gold-700);
+            transform: translateX(3px);
+        }
+    }
+
+    &:focus-within {
+        outline: 2px solid var(--av-gold-600);
+        outline-offset: 2px;
     }
 }
 
@@ -394,6 +420,12 @@ body {
             color: #fff;
         }
 
+        // The default ring is navy-on-navy here; gold stays visible.
+        &:focus-visible {
+            outline: 2px solid var(--av-gold-500);
+            outline-offset: 1px;
+        }
+
         &.active {
             background: rgba(255, 255, 255, 0.15);
             color: #fff;
@@ -490,13 +522,18 @@ body {
     }
 }
 
-// Mobile: sidebar slides in over the content
+// Mobile: sidebar slides in over the content, and the backdrop fades rather
+// than snapping on.
 .av-sidebar-backdrop {
-    display: none;
     position: fixed;
     inset: 0;
     background: rgba(11, 28, 51, 0.5);
     z-index: 1040;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity 0.25s ease,
+        visibility 0.25s ease;
 }
 
 @media (max-width: 991.98px) {
@@ -508,7 +545,8 @@ body {
         transform: translateX(0);
     }
     body.av-sidebar-open .av-sidebar-backdrop {
-        display: block;
+        opacity: 1;
+        visibility: visible;
     }
     .av-content {
         margin-left: 0;
@@ -594,13 +632,330 @@ body {
 }
 
 // ---------------------------------------------------------------------------
-// 10. Auth — centred login/register
+// 10. Auth — navy showcase beside the sign-in form
 // ---------------------------------------------------------------------------
-// Cream ground for the whole page. The logo PNG is transparent around the
-// artwork, so it sits straight on that ground with nothing boxing it in; the
-// form below gets its own white card to separate it from the page.
+// From 992px up the page splits in two: a navy showcase that says what
+// AcadVault guarantees, and the form on cream — the ground the logo artwork was
+// drawn for, so it needs no plate. Narrower than that, the showcase is dropped
+// and the form stands alone.
 .av-auth {
     min-height: 100vh;
+    display: flex;
+}
+
+.av-auth-showcase {
+    position: relative;
+    overflow: hidden;
+    display: none;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2.5rem clamp(2.5rem, 5vw, 5rem);
+    background: linear-gradient(
+        160deg,
+        var(--av-navy-700) 0%,
+        var(--av-navy-900) 70%,
+        #0d1a2d 100%
+    );
+    color: rgba(255, 255, 255, 0.82);
+
+    // Everything but the background layer sits above it.
+    > :not(.av-auth-showcase-bg) {
+        position: relative;
+        z-index: 1;
+    }
+}
+
+// A faint dot grid (a nod to the college's circuitry) that fades out towards
+// the bottom so it never competes with the text, plus two soft glows.
+.av-auth-showcase-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(
+        rgba(255, 255, 255, 0.09) 1px,
+        transparent 1.3px
+    );
+    background-size: 26px 26px;
+    mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.45) 55%, transparent 100%);
+}
+
+.av-auth-orb {
+    position: absolute;
+    width: 36rem;
+    height: 36rem;
+    border-radius: 50%;
+}
+
+.av-auth-orb-gold {
+    top: -14rem;
+    right: -12rem;
+    background: radial-gradient(circle, rgba(216, 171, 82, 0.17) 0%, rgba(216, 171, 82, 0) 62%);
+}
+
+.av-auth-orb-blue {
+    bottom: -16rem;
+    left: -14rem;
+    background: radial-gradient(circle, rgba(92, 134, 204, 0.3) 0%, rgba(92, 134, 204, 0) 65%);
+}
+
+.av-auth-lockup {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #fff;
+
+    // Cream tile — the emblem is navy and would vanish on the panel.
+    .av-auth-lockup-mark {
+        width: 44px;
+        height: 44px;
+        border-radius: 11px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        background: var(--av-cream);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    .av-auth-lockup-name {
+        display: block;
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        line-height: 1.15;
+    }
+
+    .av-auth-lockup-sub {
+        display: block;
+        font-size: 0.68rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.55);
+    }
+}
+
+// Auto margins above the pitch and above the footer share the spare height,
+// so the story sits in the middle of the panel.
+.av-auth-pitch {
+    margin-top: auto;
+}
+
+.av-auth-eyebrow {
+    margin-bottom: 0.9rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--av-gold-500);
+}
+
+.av-auth-headline {
+    margin-bottom: 1rem;
+    font-size: clamp(1.9rem, 2.6vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    color: #fff;
+}
+
+.av-auth-headline-accent {
+    background: linear-gradient(90deg, #ecc97f 0%, var(--av-gold-600) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.av-auth-lede {
+    max-width: 34rem;
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+// ---- The record illustration -----------------------------------------------
+.av-auth-demo {
+    position: relative;
+    max-width: 30rem;
+    // Room for both ciphertext lines to show above and left of the record.
+    padding: 5.6rem 0 0 2.25rem;
+}
+
+.av-demo-card {
+    border-radius: 14px;
+}
+
+.av-demo-cipher {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 80%;
+    padding: 0.85rem 1.1rem 3rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    transform: rotate(-3deg);
+    font-family: "Consolas", "SFMono-Regular", "Menlo", monospace;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.av-demo-cipher-line {
+    margin-top: 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.av-demo-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: $font-family-sans-serif;
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.av-demo-tag-light {
+    margin-bottom: 0.35rem;
+    color: var(--av-gold-700);
+}
+
+.av-demo-record {
+    position: relative;
+    padding: 1.15rem 1.25rem;
+    background: #fff;
+    color: $body-color;
+    box-shadow:
+        0 2px 6px rgba(5, 12, 24, 0.3),
+        0 24px 48px rgba(5, 12, 24, 0.45);
+}
+
+.av-demo-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--av-navy-900);
+}
+
+.av-demo-course {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.av-demo-qr {
+    position: relative;
+    overflow: hidden;
+    flex: 0 0 auto;
+    padding: 0.1rem 0.3rem;
+    border: 1px solid #e3e8ef;
+    border-radius: 8px;
+    font-size: 2.5rem;
+    line-height: 1;
+    color: var(--av-navy-800);
+}
+
+.av-demo-qr-scan {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--av-gold-600), transparent);
+    opacity: 0;
+}
+
+.av-demo-fields {
+    display: flex;
+    align-items: flex-end;
+    gap: 1.75rem;
+    margin-top: 1rem;
+    padding-top: 0.9rem;
+    border-top: 1px dashed #e3e8ef;
+}
+
+.av-demo-label {
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #6b7280;
+}
+
+.av-demo-value {
+    min-width: 4.5ch;
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--av-navy-900);
+}
+
+// While app.js "decrypts" the values they read as ciphertext.
+.av-auth-demo.is-decrypting .av-demo-value {
+    font-family: "Consolas", "SFMono-Regular", "Menlo", monospace;
+    color: var(--av-gold-700);
+}
+
+.av-demo-seal {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-left: auto;
+    padding: 0.35rem 0.75rem;
+    border: 1px solid #b6e2c8;
+    border-radius: 999px;
+    background: #dcf3e6;
+    color: #14653b;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.av-auth-demo.is-decrypting .av-demo-seal {
+    opacity: 0;
+}
+
+// ---- Feature list and footer -----------------------------------------------
+.av-auth-features {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem 1.5rem;
+    max-width: 32rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        font-size: 0.88rem;
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    i {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 9px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        background: rgba(216, 171, 82, 0.14);
+        color: var(--av-gold-500);
+    }
+}
+
+.av-auth-showcase-foot {
+    margin: auto 0 0;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+// ---- The form side ----------------------------------------------------------
+.av-auth-main {
+    flex: 1 1 auto;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -612,6 +967,23 @@ body {
             transparent 60%
         ),
         var(--av-cream);
+}
+
+@media (min-width: 992px) {
+    // Pinned to the viewport, so the story stays put while a long form (the
+    // registration page) scrolls beside it.
+    .av-auth-showcase {
+        display: flex;
+        position: sticky;
+        top: 0;
+        align-self: flex-start;
+        height: 100vh;
+    }
+
+    .av-auth-main {
+        flex: 0 0 46%;
+        min-width: 26rem;
+    }
 }
 
 .av-auth-form {
@@ -644,6 +1016,23 @@ body {
     > h2 + p {
         text-align: center;
     }
+
+    // Room for the hover sheen (section 15).
+    .btn-primary {
+        position: relative;
+        overflow: hidden;
+    }
+}
+
+// Shown under a password field while Caps Lock is on (app.js).
+.av-capslock-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #7d5605;
 }
 
 @media (max-width: 400px) {
@@ -652,15 +1041,72 @@ body {
     }
 }
 
+// Phones: a smaller lockup so the form starts on the first screen.
+@media (max-width: 575.98px) {
+    .av-auth-main {
+        padding: 1.75rem 1rem;
+    }
+
+    .av-auth-logo {
+        max-width: 10rem;
+        margin-bottom: 1.25rem;
+    }
+}
+
 // Shorter viewports: pull the lockup in so the form stays above the fold.
-@media (max-height: 760px) {
-    .av-auth {
+@media (max-width: 991.98px) and (max-height: 760px) {
+    .av-auth-main {
         padding: 2rem 1.25rem;
     }
 
     .av-auth-logo {
         max-width: 11rem;
         margin-bottom: 1.25rem;
+    }
+}
+
+// Two-panel layout: the showcase already carries the brand, so the artwork on
+// the form side scales with the screen height and the form never drops below
+// the fold on a laptop.
+@media (min-width: 992px) {
+    .av-auth-main {
+        padding: clamp(1.25rem, 4vh, 3rem) 2rem;
+    }
+
+    .av-auth-logo {
+        max-width: min(13rem, 21vh);
+        margin-bottom: min(1.75rem, 3vh);
+    }
+}
+
+@media (min-width: 992px) and (max-height: 700px) {
+    .av-auth-logo {
+        max-width: 16vh;
+    }
+
+    .av-auth-card {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+}
+
+// Laptop screens (1366×768 and the like): tighten the showcase, and drop the
+// illustration when there is simply not the height for it.
+@media (min-width: 992px) and (max-height: 820px) {
+    .av-auth-showcase {
+        gap: 1.25rem;
+        padding-top: 1.75rem;
+        padding-bottom: 1.75rem;
+    }
+
+    .av-auth-headline {
+        font-size: clamp(1.7rem, 2.3vw, 2.2rem);
+    }
+}
+
+@media (min-width: 992px) and (max-height: 700px) {
+    .av-auth-demo {
+        display: none;
     }
 }
 
@@ -715,4 +1161,594 @@ body {
 
 .toast-container {
     z-index: 1090;
+}
+
+// ---------------------------------------------------------------------------
+// 13. Dashboard shortcuts and inline grade chips
+// ---------------------------------------------------------------------------
+.av-section-title {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin: 0 0 0.75rem;
+}
+
+.av-quick-action {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    height: 100%;
+    padding: 1rem 1.15rem;
+    background: #fff;
+    border: 1px solid $card-border-color;
+    border-radius: $border-radius-lg;
+    box-shadow: var(--av-shadow-card);
+    color: inherit;
+    text-decoration: none;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+
+    .av-quick-action-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 11px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        font-size: 1.2rem;
+        background: var(--av-gold-100);
+        color: var(--av-gold-700);
+        transition:
+            background 0.2s ease,
+            color 0.2s ease;
+    }
+
+    .av-quick-action-title {
+        display: block;
+        font-weight: 600;
+        line-height: 1.3;
+        color: var(--av-navy-900);
+    }
+
+    .av-quick-action-desc {
+        display: block;
+        margin-top: 0.1rem;
+        font-size: 0.8rem;
+        line-height: 1.35;
+        color: #6b7280;
+    }
+
+    .av-quick-action-arrow {
+        color: #b6c0ce;
+        flex: 0 0 auto;
+        transition:
+            color 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    &:hover,
+    &:focus-visible {
+        border-color: #e6d6b3;
+        box-shadow: var(--av-shadow-lift);
+
+        .av-quick-action-icon {
+            background: var(--av-gold-600);
+            color: var(--av-navy-900);
+        }
+
+        .av-quick-action-arrow {
+            color: var(--av-gold-700);
+        }
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--av-gold-600);
+        outline-offset: 2px;
+    }
+}
+
+// A filed grade on the class list, linking through to its record.
+.av-grade-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.28rem 0.55rem 0.28rem 0.75rem;
+    border-radius: 999px;
+    background: var(--av-navy-100);
+    color: var(--av-navy-700);
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    text-decoration: none;
+    transition: background 0.15s ease;
+
+    i {
+        font-size: 0.7rem;
+        transition: transform 0.15s ease;
+    }
+
+    &:hover {
+        background: #d8e1ef;
+        color: var(--av-navy-900);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// 14. Page-load progress bar and busy buttons (driven by app.js)
+// ---------------------------------------------------------------------------
+.av-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    z-index: 2000;
+    pointer-events: none;
+    background: linear-gradient(90deg, var(--av-gold-600), var(--av-gold-500));
+    box-shadow: 0 0 8px rgba(200, 150, 58, 0.6);
+    transform: scaleX(0);
+    transform-origin: left center;
+    opacity: 0;
+
+    // Reduced-motion users still get a signal that something is loading,
+    // just a steady one.
+    &.is-loading {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+}
+
+// Kept clickable-looking but inert: the button is not `disabled`, because a
+// disabled submitter drops its own name/value from the request (the
+// approve/decline buttons on drop requests depend on theirs).
+.btn.av-is-busy {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+// ---------------------------------------------------------------------------
+// 15. Motion — everything here is skipped when the OS asks for reduced motion
+// ---------------------------------------------------------------------------
+@keyframes av-rise {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes av-fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes av-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(28px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes av-pop {
+    0% {
+        opacity: 0;
+        transform: scale(0.6);
+    }
+    60% {
+        opacity: 1;
+        transform: scale(1.07);
+    }
+    100% {
+        transform: none;
+    }
+}
+
+@keyframes av-ring-success {
+    from {
+        box-shadow: 0 0 0 0 rgba(21, 115, 71, 0.35);
+    }
+    to {
+        box-shadow: 0 0 0 22px rgba(21, 115, 71, 0);
+    }
+}
+
+@keyframes av-shake {
+    0%,
+    100% {
+        transform: none;
+    }
+    20%,
+    60% {
+        transform: translateX(-6px);
+    }
+    40%,
+    80% {
+        transform: translateX(6px);
+    }
+}
+
+@keyframes av-progress-grow {
+    0% {
+        transform: scaleX(0);
+    }
+    15% {
+        transform: scaleX(0.35);
+    }
+    100% {
+        transform: scaleX(0.92);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    // Page content settles in on load. The fill mode is `backwards`, never
+    // `both`: a transform left behind after the animation would turn these
+    // blocks into containing blocks and trap the position:fixed modals that
+    // live inside them. Modals are excluded outright for the same reason.
+    .av-page > .container-fluid > :not(.modal) {
+        animation: av-rise 0.42s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+    }
+
+    @for $i from 2 through 6 {
+        .av-page > .container-fluid > :not(.modal):nth-child(#{$i}) {
+            animation-delay: #{($i - 1) * 0.05}s;
+        }
+    }
+
+    // Rows of cards arrive one after another.
+    .av-stagger > * {
+        animation: av-rise 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+    }
+
+    @for $i from 1 through 6 {
+        .av-stagger > :nth-child(#{$i}) {
+            animation-delay: #{0.06 + $i * 0.05}s;
+        }
+    }
+
+    .av-auth-logo {
+        animation: av-fade 0.5s ease backwards;
+    }
+
+    .av-auth-card {
+        animation: av-rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.08s backwards;
+    }
+
+    .toast.show {
+        animation: av-slide-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    .av-quick-action:hover,
+    .av-quick-action:focus-visible {
+        transform: translateY(-2px);
+
+        .av-quick-action-arrow {
+            transform: translateX(3px);
+        }
+    }
+
+    .av-grade-chip:hover i {
+        transform: translateX(2px);
+    }
+
+    .btn:not(:disabled):not(.disabled):active {
+        transform: translateY(1px);
+    }
+
+    .av-nav-link i {
+        transition: transform 0.15s ease;
+    }
+
+    .av-nav-link:hover i {
+        transform: translateX(2px);
+    }
+
+    // Verification seal: authentic pops in and sends out a reassuring ring,
+    // tampered and invalid pop in and then shake once.
+    .av-verify-hero {
+        animation: av-pop 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s backwards;
+    }
+
+    .av-verify-authentic {
+        animation:
+            av-pop 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s backwards,
+            av-ring-success 1.4s ease-out 0.6s 2;
+    }
+
+    .av-verify-tampered {
+        animation:
+            av-pop 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s backwards,
+            av-shake 0.45s ease-in-out 0.65s;
+    }
+
+    .av-progress {
+        transition: opacity 0.3s ease;
+
+        &.is-loading {
+            animation: av-progress-grow 6s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// 16. College of Computing Education identity
+// ---------------------------------------------------------------------------
+// Top bar: which college this workspace belongs to.
+.av-topbar-context {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-width: 0;
+
+    .av-topbar-context-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        background: var(--av-gold-100);
+        color: var(--av-gold-700);
+        font-size: 1.05rem;
+    }
+
+    .av-topbar-college {
+        display: block;
+        font-weight: 700;
+        font-size: 0.9rem;
+        line-height: 1.2;
+        color: var(--av-navy-900);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .av-topbar-university {
+        font-size: 0.72rem;
+        line-height: 1.2;
+        color: #6b7280;
+    }
+}
+
+// Login: the college the sign-in belongs to, between the logo and the form.
+.av-auth-college {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin: -0.5rem auto 1.25rem;
+    padding: 0.55rem 1rem;
+    width: fit-content;
+    max-width: 100%;
+    border: 1px solid #e6d6b3;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--av-navy-900);
+
+    > i {
+        color: var(--av-gold-700);
+        font-size: 1.1rem;
+    }
+
+    .av-auth-college-name {
+        display: block;
+        font-weight: 700;
+        font-size: 0.85rem;
+        line-height: 1.2;
+    }
+
+    .av-auth-college-university {
+        display: block;
+        font-size: 0.72rem;
+        line-height: 1.2;
+        color: #6b7280;
+    }
+}
+
+// Program filter on the course catalogue.
+.av-filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.av-filter-pill {
+    padding: 0.3rem 0.8rem;
+    border: 1px solid #dde3ec;
+    border-radius: 999px;
+    background: #fff;
+    color: #4b5563;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+
+    &:hover {
+        border-color: var(--av-navy-600);
+        color: var(--av-navy-700);
+    }
+
+    &.active {
+        background: var(--av-navy-700);
+        border-color: var(--av-navy-700);
+        color: #fff;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--av-gold-600);
+        outline-offset: 2px;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .av-auth-college {
+        animation: av-rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.04s backwards;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// 17. Sign-in motion — skipped when the OS asks for reduced motion
+// ---------------------------------------------------------------------------
+@keyframes av-drift-gold {
+    to {
+        transform: translate(-6rem, 5rem) scale(1.12);
+    }
+}
+
+@keyframes av-drift-blue {
+    to {
+        transform: translate(6rem, -4rem) scale(1.15);
+    }
+}
+
+@keyframes av-float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-7px);
+    }
+}
+
+@keyframes av-float-tilted {
+    0%,
+    100% {
+        transform: rotate(-3deg) translateY(0);
+    }
+    50% {
+        transform: rotate(-3deg) translateY(5px);
+    }
+}
+
+@keyframes av-scan {
+    0% {
+        top: 0;
+        opacity: 0;
+    }
+    15%,
+    85% {
+        opacity: 1;
+    }
+    100% {
+        top: 100%;
+        opacity: 0;
+    }
+}
+
+@keyframes av-stamp {
+    0% {
+        opacity: 0;
+        transform: scale(1.8) rotate(-8deg);
+    }
+    70% {
+        opacity: 1;
+        transform: scale(0.94);
+    }
+    100% {
+        transform: none;
+    }
+}
+
+@keyframes av-sheen {
+    from {
+        left: -60%;
+    }
+    to {
+        left: 130%;
+    }
+}
+
+// The sheen strip itself is only drawn when it can move.
+.av-auth-card .btn-primary::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -60%;
+    width: 40%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+    transform: skewX(-20deg);
+    pointer-events: none;
+    display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .av-auth-orb-gold {
+        animation: av-drift-gold 18s ease-in-out infinite alternate;
+    }
+
+    .av-auth-orb-blue {
+        animation: av-drift-blue 22s ease-in-out infinite alternate;
+    }
+
+    // The story arrives in reading order.
+    .av-auth-lockup,
+    .av-auth-pitch,
+    .av-auth-demo,
+    .av-auth-features {
+        animation: av-rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+    }
+
+    .av-auth-pitch {
+        animation-delay: 0.08s;
+    }
+
+    .av-auth-demo {
+        animation-delay: 0.18s;
+    }
+
+    .av-auth-features {
+        animation-delay: 0.3s;
+    }
+
+    .av-demo-record {
+        animation: av-float 6s ease-in-out 1s infinite;
+    }
+
+    .av-demo-cipher {
+        animation: av-float-tilted 7s ease-in-out 1.4s infinite;
+    }
+
+    .av-demo-qr-scan {
+        animation: av-scan 2.8s ease-in-out 2.2s infinite;
+    }
+
+    .av-auth-demo.is-sealed .av-demo-seal {
+        animation: av-stamp 0.5s cubic-bezier(0.2, 0.7, 0.3, 1.3) backwards;
+    }
+
+    // A failed sign-in nudges the card once, after it has settled in.
+    .av-auth-card.av-auth-card-error {
+        animation:
+            av-rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.08s backwards,
+            av-shake 0.45s ease-in-out 0.65s;
+    }
+
+    .av-auth-card .btn-primary::after {
+        display: block;
+    }
+
+    .av-auth-card .btn-primary:hover::after {
+        animation: av-sheen 0.8s ease;
+    }
 }

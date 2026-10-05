@@ -12,7 +12,7 @@
             <input id="email" type="email" name="email"
                    value="{{ old('email', $request->email) }}"
                    class="form-control @error('email') is-invalid @enderror"
-                   placeholder="you@university.edu"
+                   placeholder="you@umindanao.edu.ph"
                    required autofocus autocomplete="username">
             @error('email')
                 <div class="invalid-feedback">{{ $message }}</div>

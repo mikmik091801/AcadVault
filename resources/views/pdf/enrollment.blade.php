@@ -171,7 +171,7 @@
                     <div class="inst-name">AcadVault</div>
                     <div class="inst-sub">Secure &middot; Verified &middot; Trusted</div>
                     <div style="font-size:8.5px;color:#6b7280;margin-top:2px;">
-                        Academic Records Management System
+                        {{ \App\Enums\Program::COLLEGE }} &middot; {{ \App\Enums\Program::UNIVERSITY }}
                     </div>
                 </td>
                 <td class="doc-meta">

@@ -159,7 +159,7 @@ class SeederTest extends TestCase
     {
         $expectations = [
             'admin@acadvault.test' => 'Total users',
-            'registrar@acadvault.test' => 'Exports issued',
+            'registrar@acadvault.test' => 'Drop requests',
             'faculty@acadvault.test' => 'My courses',
             'student@acadvault.test' => 'My records',
         ];

@@ -37,10 +37,12 @@ class StudentController extends Controller implements HasMiddleware
                             ->orWhere('email', 'like', "%{$search}%"));
                 });
             })
+            // select() must come before withCount(): called after, it replaces
+            // the column list and the count silently disappears.
+            ->select('students.*')
             ->withCount('academicRecords')
             ->join('users', 'users.id', '=', 'students.user_id')
             ->orderBy('users.name')
-            ->select('students.*')
             ->paginate(10)
             ->withQueryString();
 

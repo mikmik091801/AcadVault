@@ -7,16 +7,17 @@ use App\Models\Course;
 use Illuminate\Database\Seeder;
 
 /**
- * Four-year curricula for the three computing programs.
+ * Four-year curricula for the College of Computing Education's BSIT and BSCS.
  *
  * Built from the CHED sample curricula that every Philippine school works
- * from — CMO 25 s.2015 for BSIT and BSCS, and the course inventory of CMO 87
- * s.2017 for BSCpE. They are representative rather than a transcription of
+ * from (CMO 25 s.2015). They are representative rather than a transcription of
  * University of Mindanao's own prospectus; swap the arrays below when the real
- * checklist is to hand and nothing else needs to change.
+ * checklist is to hand and nothing else needs to change. The college's other
+ * programs have no seeded curriculum — the registrar adds their subjects on
+ * the Courses screen.
  *
  * Codes carry a program prefix because `courses.code` is unique across the
- * whole catalog, and all three programs share subject titles.
+ * whole catalog, and both programs share subject titles.
  *
  * Each row is [code, title, year, semester, units].
  */
@@ -26,7 +27,6 @@ class CurriculumSeeder extends Seeder
     {
         $this->seed(Program::InformationTechnology, 'IT', $this->informationTechnology());
         $this->seed(Program::ComputerScience, 'CS', $this->computerScience());
-        $this->seed(Program::ComputerEngineering, 'CPE', $this->computerEngineering());
 
         $this->command?->info('Seeded '.Course::whereNotNull('program')->count().' curriculum subjects.');
     }
@@ -211,85 +211,6 @@ class CurriculumSeeder extends Seeder
             ['IAS1', 'Information Assurance and Security', 4, 2, 3],
             ['THESIS2', 'Thesis Writing 2', 4, 2, 3],
             ['SEMTOUR', 'Seminars and Tours', 4, 2, 3],
-        ];
-    }
-
-    /**
-     * Built from the CMO 87 s.2017 course inventory, sequenced the way an
-     * engineering program normally runs: the mathematics and science stack
-     * first, circuits in second year, embedded and architecture in third,
-     * design and practicum last.
-     *
-     * @return array<int, array{0: string, 1: string, 2: int, 3: int, 4: int}>
-     */
-    private function computerEngineering(): array
-    {
-        return [
-            // ---- First year ------------------------------------------------
-            ['CPE01', 'Computer Engineering as a Discipline', 1, 1, 1],
-            ['M01', 'Calculus 1', 1, 1, 4],
-            ['NPS01', 'Chemistry for Engineers', 1, 1, 4],
-            ['GE1', 'Mathematics in the Modern World', 1, 1, 3],
-            ['GE2', 'Understanding the Self', 1, 1, 3],
-            ['PE1', 'Physical Fitness', 1, 1, 2],
-            ['NSTP1', 'National Service Training Program 1', 1, 1, 3],
-
-            ['M02', 'Calculus 2', 1, 2, 4],
-            ['NPS02', 'Physics for Engineers', 1, 2, 4],
-            ['PROG1', 'Programming Logic and Design', 1, 2, 3],
-            ['BES01', 'Computer-Aided Drafting', 1, 2, 1],
-            ['GE3', 'Readings in Philippine History', 1, 2, 3],
-            ['GE4', 'Purposive Communication', 1, 2, 3],
-            ['PE2', 'Rhythmic Activities', 1, 2, 2],
-            ['NSTP2', 'National Service Training Program 2', 1, 2, 3],
-
-            // ---- Second year -----------------------------------------------
-            ['M03', 'Engineering Data Analysis', 2, 1, 3],
-            ['M04', 'Differential Equations', 2, 1, 3],
-            ['A01', 'Fundamentals of Electrical Circuits', 2, 1, 4],
-            ['P01', 'Object Oriented Programming', 2, 1, 3],
-            ['GE5', 'The Contemporary World', 2, 1, 3],
-            ['PE3', 'Individual and Dual Sports', 2, 1, 2],
-
-            ['A02', 'Fundamentals of Electronic Circuits', 2, 2, 4],
-            ['P02', 'Discrete Mathematics for Computer Engineers', 2, 2, 3],
-            ['P03', 'Data Structures and Algorithms', 2, 2, 3],
-            ['P04', 'Logic Circuits and Switching Theory', 2, 2, 3],
-            ['GE6', 'Art Appreciation', 2, 2, 3],
-            ['PE4', 'Team Sports and Games', 2, 2, 2],
-
-            ['P05', 'Computer Engineering Drafting and Design', 2, 3, 1],
-            ['GE7', 'Science, Technology and Society', 2, 3, 3],
-
-            // ---- Third year ------------------------------------------------
-            ['P06', 'Computer Architecture and Organization', 3, 1, 3],
-            ['P07', 'Introduction to HDL', 3, 1, 3],
-            ['P08', 'Feedback and Control Systems', 3, 1, 3],
-            ['A09', 'Fundamentals of Mixed Signals and Sensors', 3, 1, 3],
-            ['BES02', 'Engineering Economics', 3, 1, 3],
-            ['GE8', 'Ethics', 3, 1, 3],
-
-            ['P09', 'Microprocessors and Microcontrollers', 3, 2, 3],
-            ['P10', 'Operating Systems', 3, 2, 3],
-            ['P11', 'Data and Digital Communications', 3, 2, 3],
-            ['P12', 'Software Design', 3, 2, 3],
-            ['BES03', 'Technopreneurship 101', 3, 2, 3],
-            ['RIZAL', 'Life, Works and Writings of Dr. Jose Rizal', 3, 2, 3],
-
-            ['P13', 'Seminars and Field Trips', 3, 3, 1],
-            ['P14', 'On-the-Job Training', 3, 3, 3],
-
-            // ---- Fourth year -----------------------------------------------
-            ['P15', 'Embedded Systems', 4, 1, 3],
-            ['P16', 'Digital Signal Processing', 4, 1, 3],
-            ['P17', 'Computer Networks and Security', 4, 1, 3],
-            ['P18', 'CpE Practice and Design 1', 4, 1, 3],
-            ['P19', 'Technical Elective 1', 4, 1, 3],
-
-            ['P20', 'CpE Practice and Design 2', 4, 2, 3],
-            ['P21', 'Emerging Technologies in CpE', 4, 2, 3],
-            ['P22', 'Technical Elective 2', 4, 2, 3],
-            ['P23', 'CpE Laws and Professional Practice', 4, 2, 3],
         ];
     }
 }

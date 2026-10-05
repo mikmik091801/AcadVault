@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\AcademicRecord;
+use App\Models\AuditLog;
 use App\Models\Course;
+use App\Models\Enrollment;
 use App\Models\Student;
 use App\Models\User;
 use App\Support\AuditLogger;
@@ -112,7 +114,7 @@ class RoleAccessTest extends TestCase
 
         $this->actingAs($student)->get('/students')->assertForbidden();
 
-        $log = \App\Models\AuditLog::where('action', AuditLogger::ACCESS_DENIED)->first();
+        $log = AuditLog::where('action', AuditLogger::ACCESS_DENIED)->first();
 
         $this->assertNotNull($log);
         $this->assertNotNull($log->ip_address);
@@ -174,6 +176,7 @@ class RoleAccessTest extends TestCase
         $faculty = User::factory()->faculty()->create();
         $course = Course::factory()->create(['faculty_id' => $faculty->id]);
         $student = Student::factory()->create();
+        Enrollment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id]);
 
         $this->actingAs($faculty)
             ->post(route('records.store'), [
