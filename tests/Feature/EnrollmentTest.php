@@ -56,7 +56,7 @@ class EnrollmentTest extends TestCase
     public function test_a_student_enrolls_themselves_without_approval(): void
     {
         $profile = Student::factory()->create();
-        $course = Course::factory()->create(['code' => 'CS101']);
+        $course = Course::factory()->forStudent($profile)->create(['code' => 'CS101']);
 
         $this->actingAs($profile->user)
             ->post(route('enrollments.store'), ['course_id' => $course->id])
@@ -77,7 +77,8 @@ class EnrollmentTest extends TestCase
     public function test_a_student_cannot_enroll_twice_in_the_same_class(): void
     {
         $profile = Student::factory()->create();
-        $course = Course::factory()->create();
+        $course = Course::factory()->forStudent($profile)->create();
+
         Enrollment::factory()->create(['student_id' => $profile->id, 'course_id' => $course->id]);
 
         $this->actingAs($profile->user)
@@ -90,8 +91,8 @@ class EnrollmentTest extends TestCase
     public function test_a_student_only_sees_classes_they_have_not_taken(): void
     {
         $profile = Student::factory()->create();
-        $taken = Course::factory()->create(['code' => 'TAKEN101', 'title' => 'Already Mine']);
-        Course::factory()->create(['code' => 'OPEN101', 'title' => 'Still Open']);
+        $taken = Course::factory()->forStudent($profile)->create(['code' => 'TAKEN101', 'title' => 'Already Mine']);
+        Course::factory()->forStudent($profile)->create(['code' => 'OPEN101', 'title' => 'Still Open']);
 
         Enrollment::factory()->create(['student_id' => $profile->id, 'course_id' => $taken->id]);
 
@@ -106,7 +107,7 @@ class EnrollmentTest extends TestCase
     {
         $mine = Student::factory()->create();
         $theirs = Student::factory()->create();
-        $course = Course::factory()->create();
+        $course = Course::factory()->forStudent($mine)->create();
 
         // student_id is never taken from the request, so the row can only
         // ever land on the signed-in student.

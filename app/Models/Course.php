@@ -44,8 +44,18 @@ class Course extends Model
     }
 
     /**
-     * Subjects a student may enroll in: the ones in their own program and year,
-     * plus any subject not yet mapped to a curriculum, which stays open to all.
+     * Subjects a student may enroll in: only those mapped to their own
+     * program and year level. Unmapped or other-year subjects are hidden.
+     */
+    public function scopeOfferedTo(Builder $query, Student $student): Builder
+    {
+        return $query
+            ->where('program', $student->program)
+            ->where('year_level', $student->year_level);
+    }
+
+    /**
+     * Kept for legacy use; the enrollment portal now uses offeredTo().
      */
     public function scopeInCurriculumFor(Builder $query, Student $student): Builder
     {

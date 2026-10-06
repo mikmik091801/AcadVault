@@ -23,6 +23,18 @@ class CourseFactory extends Factory
         ];
     }
 
+    /**
+     * Map the course to the given student's program and year, so it is
+     * enrollable by them under the offeredTo() scope.
+     */
+    public function forStudent(\App\Models\Student $student): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'program' => $student->program,
+            'year_level' => $student->year_level,
+        ]);
+    }
+
     public function unassigned(): static
     {
         return $this->state(fn (array $attributes) => ['faculty_id' => null]);

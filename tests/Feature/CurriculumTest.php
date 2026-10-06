@@ -64,20 +64,21 @@ class CurriculumTest extends TestCase
             ->assertDontSee('Introduction to Computing');
     }
 
-    public function test_an_unplaced_subject_stays_open_to_everyone(): void
+    public function test_an_unplaced_subject_is_not_enrollable_until_it_is_mapped(): void
     {
         $student = Student::factory()->create([
             'program' => Program::MultimediaArts->value,
             'year_level' => 3,
         ]);
 
-        // Subjects seeded before the curriculum existed carry no placement.
+        // Subjects seeded before the curriculum existed carry no placement,
+        // so they must not show as enrollable until the registrar maps them.
         $this->subject('GE101', 'Purposive Communication', null, null, null);
 
         $this->actingAs($student->user)
             ->get(route('enrollments.index'))
             ->assertOk()
-            ->assertSee('Purposive Communication');
+            ->assertDontSee('Purposive Communication');
     }
 
     public function test_subjects_are_grouped_by_semester(): void

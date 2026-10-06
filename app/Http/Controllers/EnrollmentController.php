@@ -45,7 +45,7 @@ class EnrollmentController extends Controller implements HasMiddleware
         // Their own curriculum, minus anything they already hold a row for.
         $available = Course::query()
             ->with('faculty')
-            ->inCurriculumFor($student)
+            ->offeredTo($student)
             ->whereDoesntHave('enrollments', fn ($q) => $q->where('student_id', $student->id))
             ->orderBy('semester')
             ->orderBy('code')
@@ -79,6 +79,18 @@ class EnrollmentController extends Controller implements HasMiddleware
         ]);
 
         $student = $this->student($request);
+
+        // Only classes in the student's own program and year level.
+        $allowed = Course::query()
+            ->offeredTo($student)
+            ->whereKey($validated['course_id'])
+            ->exists();
+
+        if (! $allowed) {
+            throw ValidationException::withMessages([
+                'course_id' => 'This class is not offered in your program and year level.',
+            ]);
+        }
 
         // The unique index also guards this, but a friendly error beats a
         // 500 when someone double-submits or re-posts a stale form.

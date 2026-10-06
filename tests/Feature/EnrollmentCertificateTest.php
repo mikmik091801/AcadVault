@@ -35,7 +35,7 @@ class EnrollmentCertificateTest extends TestCase
                 'student_id' => $student->id,
                 // Codes come from the factory: this helper runs twice in some
                 // tests and `courses.code` is unique.
-                'course_id' => Course::factory()->create()->id,
+                'course_id' => Course::factory()->forStudent($student)->create()->id,
             ]);
         }
 
@@ -175,7 +175,7 @@ class EnrollmentCertificateTest extends TestCase
         $this->get(route('verify.enrollment', $document->uuid))->assertSee('is current');
 
         $this->actingAs($student->user)->post(route('enrollments.store'), [
-            'course_id' => Course::factory()->create()->id,
+            'course_id' => Course::factory()->forStudent($student)->create()->id,
         ]);
 
         $this->get(route('verify.enrollment', $document->uuid))
