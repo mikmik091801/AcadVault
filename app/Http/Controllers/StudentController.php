@@ -33,8 +33,20 @@ class StudentController extends Controller implements HasMiddleware
                 $query->where(function ($q) use ($search) {
                     $q->where('student_number', 'like', "%{$search}%")
                         ->orWhere('program', 'like', "%{$search}%")
-                        ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%")
-                            ->orWhere('email', 'like', "%{$search}%"));
+                        ->orWhereHas('user', function ($u) use ($search) {
+                            // Every word in the search must appear somewhere in
+                            // the student's identity, so "anna" matches all
+                            // Annas and "anna bautista" also matches
+                            // "Anna L. Bautista".
+                            foreach (preg_split('/\s+/', $search) ?: [] as $term) {
+                                $u->where(function ($termQuery) use ($term) {
+                                    $termQuery->where('name', 'like', "%{$term}%")
+                                        ->orWhere('first_name', 'like', "%{$term}%")
+                                        ->orWhere('last_name', 'like', "%{$term}%")
+                                        ->orWhere('email', 'like', "%{$term}%");
+                                });
+                            }
+                        });
                 });
             })
             // select() must come before withCount(): called after, it replaces
