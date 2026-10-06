@@ -31,19 +31,20 @@ class StudentController extends Controller implements HasMiddleware
             ->with('user')
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('student_number', 'like', "%{$search}%")
-                        ->orWhere('program', 'like', "%{$search}%")
+                    $q->whereRaw('LOWER(student_number) LIKE ?', ['%'.strtolower($search).'%'])
+                        ->orWhereRaw('LOWER(program) LIKE ?', ['%'.strtolower($search).'%'])
                         ->orWhereHas('user', function ($u) use ($search) {
                             // Every word in the search must appear somewhere in
                             // the student's identity, so "anna" matches all
                             // Annas and "anna bautista" also matches
                             // "Anna L. Bautista".
                             foreach (preg_split('/\s+/', $search) ?: [] as $term) {
+                                $term = strtolower($term);
                                 $u->where(function ($termQuery) use ($term) {
-                                    $termQuery->where('name', 'like', "%{$term}%")
-                                        ->orWhere('first_name', 'like', "%{$term}%")
-                                        ->orWhere('last_name', 'like', "%{$term}%")
-                                        ->orWhere('email', 'like', "%{$term}%");
+                                    $termQuery->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"])
+                                        ->orWhereRaw('LOWER(first_name) LIKE ?', ["%{$term}%"])
+                                        ->orWhereRaw('LOWER(last_name) LIKE ?', ["%{$term}%"])
+                                        ->orWhereRaw('LOWER(email) LIKE ?', ["%{$term}%"]);
                                 });
                             }
                         });
