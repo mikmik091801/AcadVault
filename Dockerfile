@@ -19,7 +19,8 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader \
     && npm ci && npm run build && npm prune --omit=dev
 
-RUN chmod -R 775 storage bootstrap/cache
+RUN chmod -R 775 storage bootstrap/cache \
+    && php artisan storage:link
 
 EXPOSE 10000
 
