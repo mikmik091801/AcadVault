@@ -8,6 +8,7 @@ use App\Http\Requests\CourseRequest;
 use App\Models\AcademicRecord;
 use App\Models\Course;
 use App\Models\User;
+use App\Support\SearchTerm;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -43,9 +44,9 @@ class CourseController extends Controller implements HasMiddleware
             ->when($user->isFaculty(), fn ($q) => $q->where('faculty_id', $user->id))
             ->when($program, fn ($q) => $q->where('program', $program->value))
             ->when($search !== '', fn ($q) => $q->where(function ($sub) use ($search) {
-                $sub->where('code', 'like', "%{$search}%")
-                    ->orWhere('title', 'like', "%{$search}%")
-                    ->orWhereHas('faculty', fn ($f) => $f->where('name', 'like', "%{$search}%"));
+                SearchTerm::where($sub, 'code', $search);
+                SearchTerm::orWhere($sub, 'title', $search);
+                $sub->orWhereHas('faculty', fn ($f) => SearchTerm::whereAllWords($f, ['name', 'first_name', 'last_name'], $search));
             }))
             ->orderBy('code')
             ->paginate(10)

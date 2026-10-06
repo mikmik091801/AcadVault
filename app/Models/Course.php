@@ -12,7 +12,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['code', 'title', 'faculty_id', 'program', 'year_level', 'semester', 'units'])]
 class Course extends Model
 {
-    use HasFactory;
+    use HasFactory, \Illuminate\Database\Eloquent\SoftDeletes;
+
+    protected static function booted(): void
+    {
+        static::deleting(function (self $course) {
+            if ($course->isForceDeleting()) {
+                return;
+            }
+
+            $course->enrollments()->delete();
+            $course->academicRecords()->delete();
+        });
+    }
 
     /**
      * @return array<string, string>

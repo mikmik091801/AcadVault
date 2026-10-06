@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AuditLog;
 use App\Models\User;
 use App\Support\AuditLogger;
+use App\Support\SearchTerm;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -36,12 +37,11 @@ class AuditLogController extends Controller implements HasMiddleware
             ->when($filters['from'] !== '', fn ($q) => $q->whereDate('created_at', '>=', $filters['from']))
             ->when($filters['to'] !== '', fn ($q) => $q->whereDate('created_at', '<=', $filters['to']))
             ->when($filters['search'] !== '', fn ($q) => $q->where(function ($sub) use ($filters) {
-                $term = "%{$filters['search']}%";
-                $sub->where('ip_address', 'like', $term)
-                    ->orWhere('target_type', 'like', $term)
-                    ->orWhere('action', 'like', $term)
-                    ->orWhereHas('user', fn ($u) => $u->where('name', 'like', $term)
-                        ->orWhere('email', 'like', $term));
+                $term = $filters['search'];
+                SearchTerm::where($sub, 'ip_address', $term);
+                SearchTerm::orWhere($sub, 'target_type', $term);
+                SearchTerm::orWhere($sub, 'action', $term);
+                $sub->orWhereHas('user', fn ($u) => SearchTerm::whereAllWords($u, ['name', 'email'], $term));
             }))
             ->latest()
             ->paginate(20)

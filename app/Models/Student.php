@@ -11,7 +11,22 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['user_id', 'student_number', 'program', 'year_level'])]
 class Student extends Model
 {
-    use HasFactory;
+    use HasFactory, \Illuminate\Database\Eloquent\SoftDeletes;
+
+    protected static function booted(): void
+    {
+        // Keep enrolments and grades out of lists once the profile is
+        // removed, but stay recoverable alongside it on force-delete the
+        // database cascades take over.
+        static::deleting(function (self $student) {
+            if ($student->isForceDeleting()) {
+                return;
+            }
+
+            $student->enrollments()->delete();
+            $student->academicRecords()->delete();
+        });
+    }
 
     protected function casts(): array
     {

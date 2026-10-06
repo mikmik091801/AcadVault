@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\View\View;
+use App\Support\SearchTerm;
 
 class StudentController extends Controller implements HasMiddleware
 {
@@ -31,23 +32,9 @@ class StudentController extends Controller implements HasMiddleware
             ->with('user')
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->whereRaw('LOWER(student_number) LIKE ?', ['%'.strtolower($search).'%'])
-                        ->orWhereRaw('LOWER(program) LIKE ?', ['%'.strtolower($search).'%'])
-                        ->orWhereHas('user', function ($u) use ($search) {
-                            // Every word in the search must appear somewhere in
-                            // the student's identity, so "anna" matches all
-                            // Annas and "anna bautista" also matches
-                            // "Anna L. Bautista".
-                            foreach (preg_split('/\s+/', $search) ?: [] as $term) {
-                                $term = strtolower($term);
-                                $u->where(function ($termQuery) use ($term) {
-                                    $termQuery->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"])
-                                        ->orWhereRaw('LOWER(first_name) LIKE ?', ["%{$term}%"])
-                                        ->orWhereRaw('LOWER(last_name) LIKE ?', ["%{$term}%"])
-                                        ->orWhereRaw('LOWER(email) LIKE ?', ["%{$term}%"]);
-                                });
-                            }
-                        });
+                    SearchTerm::where($q, 'student_number', $search);
+                    SearchTerm::orWhere($q, 'program', $search);
+                    $q->orWhereHas('user', fn ($u) => SearchTerm::whereAllWords($u, ['name', 'first_name', 'last_name', 'email'], $search));
                 });
             })
             // select() must come before withCount(): called after, it replaces

@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['student_id', 'course_id', 'grade', 'remarks', 'created_by'])]
 class AcademicRecord extends Model
 {
-    use HasFactory;
+    use HasFactory, \Illuminate\Database\Eloquent\SoftDeletes;
 
     /**
      * `grade` and `remarks` are encrypted at rest with AES-256-CBC via

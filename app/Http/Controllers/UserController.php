@@ -6,6 +6,7 @@ use App\Enums\Role;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use App\Support\AuditLogger;
+use App\Support\SearchTerm;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -36,9 +37,7 @@ class UserController extends Controller implements HasMiddleware
 
         $users = User::query()
             ->with('student')
-            ->when($search !== '', fn ($query) => $query->where(fn ($q) => $q
-                ->where('name', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%")))
+            ->when($search !== '', fn ($query) => $query->where(fn ($q) => SearchTerm::whereAllWords($q, ['name', 'first_name', 'last_name', 'email'], $search)))
             ->when(Role::tryFrom($role), fn ($query, Role $value) => $query->where('role', $value))
             ->orderBy('name')
             ->paginate(10)

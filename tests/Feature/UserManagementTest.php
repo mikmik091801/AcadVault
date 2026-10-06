@@ -319,7 +319,7 @@ class UserManagementTest extends TestCase
             ->delete(route('users.destroy', $user))
             ->assertRedirect(route('users.index'));
 
-        $this->assertDatabaseMissing('users', ['id' => $user->id]);
+        $this->assertSoftDeleted('users', ['id' => $user->id]);
 
         $this->assertDatabaseHas('audit_logs', [
             'user_id' => $admin->id,
@@ -353,8 +353,8 @@ class UserManagementTest extends TestCase
             ->delete(route('users.destroy', $profile->user))
             ->assertRedirect(route('users.index'));
 
-        $this->assertDatabaseMissing('students', ['id' => $profile->id]);
-        $this->assertDatabaseMissing('academic_records', ['id' => $record->id]);
+        $this->assertSoftDeleted('students', ['id' => $profile->id]);
+        $this->assertSoftDeleted('academic_records', ['id' => $record->id]);
 
         // The entry survives with a null user_id — audit rows are never purged.
         $this->assertDatabaseHas('audit_logs', [

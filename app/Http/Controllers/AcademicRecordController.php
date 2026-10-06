@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Student;
 use App\Support\AuditLogger;
+use App\Support\SearchTerm;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
@@ -37,10 +38,14 @@ class AcademicRecordController extends Controller implements HasMiddleware
             ->when($search !== '', fn ($q) => $q->where(function (Builder $sub) use ($search) {
                 // NOTE: grade and remarks are encrypted at rest, so they are
                 // deliberately not searchable here.
-                $sub->whereHas('student', fn ($s) => $s->where('student_number', 'like', "%{$search}%")
-                    ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%")))
-                    ->orWhereHas('course', fn ($c) => $c->where('code', 'like', "%{$search}%")
-                        ->orWhere('title', 'like', "%{$search}%"));
+                $sub->whereHas('student', function ($s) use ($search) {
+                    SearchTerm::where($s, 'student_number', $search);
+                    $s->orWhereHas('user', fn ($u) => SearchTerm::whereAllWords($u, ['name', 'first_name', 'last_name', 'email'], $search));
+                })
+                    ->orWhereHas('course', function ($c) use ($search) {
+                        SearchTerm::where($c, 'code', $search);
+                        SearchTerm::orWhere($c, 'title', $search);
+                    });
             }))
             ->latest()
             ->paginate(10)
@@ -77,11 +82,12 @@ class AcademicRecordController extends Controller implements HasMiddleware
             'created_by' => $request->user()->id,
         ]);
 
+        $record->load('student.user', 'course');
+        $record->student?->user?->notify(new \App\Notifications\GradePosted($record, posted: true));
+
         // Grading from a class list goes back to that list, so the next
         // student is one click away.
         if ($request->boolean('return_to_course')) {
-            $record->load('student.user');
-
             return redirect()
                 ->route('courses.show', $record->course_id)
                 ->with('success', "Grade saved for {$record->student?->user?->name}.");
@@ -125,6 +131,9 @@ class AcademicRecordController extends Controller implements HasMiddleware
 
         // record.updated is written by AcademicRecordObserver.
         $record->update($request->validated());
+
+        $record->load('student.user', 'course');
+        $record->student?->user?->notify(new \App\Notifications\GradePosted($record, posted: false));
 
         return redirect()
             ->route('records.show', $record)

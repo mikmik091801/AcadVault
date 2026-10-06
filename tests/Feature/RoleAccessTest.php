@@ -233,7 +233,7 @@ class RoleAccessTest extends TestCase
             ->delete(route('courses.destroy', $course))
             ->assertRedirect(route('courses.index'));
 
-        $this->assertDatabaseMissing('courses', ['id' => $course->id]);
+        $this->assertSoftDeleted('courses', ['id' => $course->id]);
     }
 
     // ------------------------------------------------------------------

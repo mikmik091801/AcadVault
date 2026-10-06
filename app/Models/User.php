@@ -12,12 +12,14 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 #[Fillable(['name', 'last_name', 'first_name', 'middle_initial', 'phone', 'email', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
     /**
      * Keep `name` in step with the parts it is built from.
@@ -43,6 +45,19 @@ class User extends Authenticatable
             if ($user->isDirty(['first_name', 'middle_initial', 'last_name'])) {
                 $user->name = $user->composedName();
             }
+        });
+
+        // Soft deletion mirrors the old database cascades, but keeps rows
+        // recoverable: the profile goes with the account, and the audit
+        // trail survives with the user detached (user_id set to null).
+        static::deleting(function (self $user) {
+            if ($user->isForceDeleting()) {
+                return;
+            }
+
+            $user->student?->delete();
+            $user->courses()->update(['faculty_id' => null]);
+            $user->auditLogs()->update(['user_id' => null]);
         });
     }
 

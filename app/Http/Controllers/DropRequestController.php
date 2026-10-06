@@ -74,6 +74,9 @@ class DropRequestController extends Controller implements HasMiddleware
             $enrollment,
         );
 
+        $enrollment->loadMissing('student.user', 'course');
+        $enrollment->student?->user?->notify(new \App\Notifications\DropRequestReviewed($enrollment, $approved));
+
         $name = $enrollment->student?->user?->name;
         $code = $enrollment->course?->code;
 

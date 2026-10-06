@@ -1,0 +1,20 @@
+PHP 8.4.22 (cli) (built: Jun  3 2026 01:23:18) (NTS Visual C++ 2022 x64)
+Copyright (c) The PHP Group
+Built by The PHP Group
+Zend Engine v4.4.22, Copyright (c) Zend Technologies
+    with Zend OPcache v8.4.22, Copyright (c), by Zend Technologies
+Composer version 2.9.5 2026-01-29 11:40:53
+composer : PHP version 8.4.22 (C:\Users\mcuyn\.config\herd\bin\php84\php.exe)
+At line:1 char:25
++ $out = & { php -v 2>&1; composer -V 2>&1; node -v 2>&1; npm -v 2>&1;  ...
++                         ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (PHP version 8.4...\php84\php.exe):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Run the "diagnose" command to get more detailed diagnostics output.
+v26.4.0
+vendor: True
+node_modules: True
+env: True
+sqlite: True
+

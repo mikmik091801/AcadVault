@@ -103,9 +103,9 @@ class SchemaTest extends TestCase
 
         $user->delete();
 
-        // Profile and records go with the account...
-        $this->assertDatabaseMissing('students', ['id' => $student->id]);
-        $this->assertDatabaseMissing('academic_records', ['id' => $record->id]);
+        // Profile and records go with the account (soft-deleted, recoverable)...
+        $this->assertSoftDeleted('students', ['id' => $student->id]);
+        $this->assertSoftDeleted('academic_records', ['id' => $record->id]);
 
         // ...but the audit trail is retained with the user detached.
         $this->assertDatabaseHas('audit_logs', [

@@ -201,6 +201,8 @@ class EnrollmentTest extends TestCase
         $profile = Student::factory()->create();
         $enrollment = Enrollment::factory()->dropPending()->create(['student_id' => $profile->id]);
 
+        \Illuminate\Support\Facades\Notification::fake();
+
         $this->actingAs($registrar)
             ->patch(route('drop-requests.update', $enrollment), ['decision' => 'approve'])
             ->assertRedirect(route('drop-requests.index'));
@@ -218,6 +220,12 @@ class EnrollmentTest extends TestCase
             'user_id' => $registrar->id,
             'action' => AuditLogger::DROP_APPROVED,
         ]);
+
+        \Illuminate\Support\Facades\Notification::assertSentTo(
+            $profile->user,
+            \App\Notifications\DropRequestReviewed::class,
+            fn ($notification) => $notification->approved === true,
+        );
     }
 
     public function test_declining_a_drop_puts_the_student_back_as_enrolled(): void

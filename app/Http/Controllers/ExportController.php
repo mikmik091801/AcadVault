@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AcademicRecord;
 use App\Models\Export;
 use App\Support\ExportService;
+use App\Support\SearchTerm;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -29,11 +30,16 @@ class ExportController extends Controller
                 fn ($s) => $s->where('user_id', $user->id),
             ))
             ->when($search !== '', fn ($q) => $q->where(function ($sub) use ($search) {
-                $sub->where('uuid', 'like', "%{$search}%")
-                    ->orWhere('file_hash', 'like', "%{$search}%")
-                    ->orWhereHas('academicRecord.student', fn ($s) => $s->where('student_number', 'like', "%{$search}%")
-                        ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%")))
-                    ->orWhereHas('academicRecord.course', fn ($c) => $c->where('code', 'like', "%{$search}%"));
+                SearchTerm::where($sub, 'uuid', $search);
+                SearchTerm::orWhere($sub, 'file_hash', $search);
+                $sub->orWhereHas('academicRecord.student', function ($s) use ($search) {
+                    SearchTerm::where($s, 'student_number', $search);
+                    $s->orWhereHas('user', fn ($u) => SearchTerm::whereAllWords($u, ['name', 'first_name', 'last_name'], $search));
+                })
+                    ->orWhereHas('academicRecord.course', function ($c) use ($search) {
+                        SearchTerm::where($c, 'code', $search);
+                        SearchTerm::orWhere($c, 'title', $search);
+                    });
             }))
             ->latest()
             ->paginate(10)
