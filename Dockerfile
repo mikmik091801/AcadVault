@@ -19,12 +19,12 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader \
     && npm ci && npm run build && npm prune --omit=dev
 
-RUN chmod -R 775 storage bootstrap/cache \
-    && php artisan storage:link
+RUN chmod -R 775 storage bootstrap/cache
 
 EXPOSE 10000
 
 CMD php artisan migrate --force \
+    && php artisan storage:link \
     && php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache \
