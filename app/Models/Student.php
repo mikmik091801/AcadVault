@@ -18,6 +18,11 @@ class Student extends Model
         // Keep enrolments and grades out of lists once the profile is
         // removed, but stay recoverable alongside it on force-delete the
         // database cascades take over.
+        static::restoring(function (self $student) {
+            $student->enrollments()->withTrashed()->restore();
+            $student->academicRecords()->withTrashed()->restore();
+        });
+
         static::deleting(function (self $student) {
             if ($student->isForceDeleting()) {
                 return;

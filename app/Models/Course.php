@@ -16,6 +16,11 @@ class Course extends Model
 
     protected static function booted(): void
     {
+        static::restoring(function (self $course) {
+            $course->enrollments()->withTrashed()->restore();
+            $course->academicRecords()->withTrashed()->restore();
+        });
+
         static::deleting(function (self $course) {
             if ($course->isForceDeleting()) {
                 return;

@@ -64,6 +64,12 @@ class AuditLogger
 
     public const USER_DELETED = 'user.deleted';
 
+    public const USER_RESTORED = 'user.restored';
+
+    public const STUDENT_RESTORED = 'student.restored';
+
+    public const COURSE_RESTORED = 'course.restored';
+
     // Access control
     public const ACCESS_DENIED = 'access.denied';
 
@@ -98,6 +104,9 @@ class AuditLogger
             self::USER_UPDATED => ['label' => 'User updated', 'icon' => 'bi-person-gear', 'variant' => 'warning'],
             self::USER_ROLE_CHANGED => ['label' => 'Role changed', 'icon' => 'bi-shield-check', 'variant' => 'warning'],
             self::USER_DELETED => ['label' => 'User deleted', 'icon' => 'bi-person-x', 'variant' => 'danger'],
+            self::USER_RESTORED => ['label' => 'User restored', 'icon' => 'bi-person-check', 'variant' => 'success'],
+            self::STUDENT_RESTORED => ['label' => 'Student restored', 'icon' => 'bi-person-check', 'variant' => 'success'],
+            self::COURSE_RESTORED => ['label' => 'Course restored', 'icon' => 'bi-journal-check', 'variant' => 'success'],
             self::ACCESS_DENIED => ['label' => 'Access denied', 'icon' => 'bi-shield-exclamation', 'variant' => 'danger'],
         ];
     }

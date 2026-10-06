@@ -49,6 +49,10 @@
         \App\Enums\Role::Admin => [
             $item('users.index', 'Users', 'bi-people'),
             $item('audit-logs.index', 'Audit Logs', 'bi-clipboard-data'),
+            $item('trashed.index', 'Trash', 'bi-trash3'),
+        ],
+        \App\Enums\Role::Registrar => [
+            $item('trashed.index', 'Trash', 'bi-trash3'),
         ],
         default => [],
     });

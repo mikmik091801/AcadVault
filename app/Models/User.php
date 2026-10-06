@@ -50,6 +50,10 @@ class User extends Authenticatable
         // Soft deletion mirrors the old database cascades, but keeps rows
         // recoverable: the profile goes with the account, and the audit
         // trail survives with the user detached (user_id set to null).
+        static::restoring(function (self $user) {
+            Student::withTrashed()->where('user_id', $user->id)->first()?->restore();
+        });
+
         static::deleting(function (self $user) {
             if ($user->isForceDeleting()) {
                 return;
