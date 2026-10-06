@@ -85,11 +85,7 @@
                     <i class="bi bi-qr-code text-accent me-2" aria-hidden="true"></i>Verification code
                 </div>
                 <div class="card-body text-center">
-                    @if ($document->qr_code_path)
-                        <img src="{{ Storage::disk('public')->url($document->qr_code_path) }}"
-                             alt="QR code linking to the public verification page"
-                             class="img-fluid mb-3" style="max-width:210px;">
-                    @endif
+                    <x-qr :url="$verifyUrl" />
 
                     <p class="text-body-secondary small mb-3">
                         This code is printed on the PDF. Scanning it opens the public
